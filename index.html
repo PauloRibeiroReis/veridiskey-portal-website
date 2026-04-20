@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Veridiskey — Trusted Infrastructure for Digital Cities</title>
+<meta name="description" content="Veridiskey delivers cryptographically secured contractor credentials and tamper-proof procurement audit trails — built on European blockchain infrastructure.">
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='6' fill='%2316a34a'/><path d='M16 7a5 5 0 0 0-5 5v3h-1.5a1 1 0 0 0-1 1v8.5a1 1 0 0 0 1 1h13a1 1 0 0 0 1-1V16a1 1 0 0 0-1-1H21v-3a5 5 0 0 0-5-5zm-2.5 8v-3a2.5 2.5 0 1 1 5 0v3z' fill='white'/></svg>">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,300;1,9..40,400;1,9..40,500;1,9..40,600&family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500;1,600;1,700&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{--g9:#052e16;--g8:#14532d;--g7:#166534;--g6:#16a34a;--g5:#22c55e;--g4:#4ade80;--g1:#dcfce7;--g0:#f0fdf4;--gb:rgba(22,163,74,.15);--t:#1a2e22;--tb:#3d5347;--td:#6b8577;--tl:#94a89d;--b:rgba(0,0,0,.06);--sh:0 1px 3px rgba(0,0,0,.04),0 4px 16px rgba(0,0,0,.04);--sl:0 2px 6px rgba(0,0,0,.04),0 8px 32px rgba(0,0,0,.06)}
+html{scroll-behavior:smooth}
+body{font-family:'DM Sans',system-ui,sans-serif;font-size:15px;font-weight:400;background:#f8faf9;color:var(--tb);line-height:1.7;overflow-x:hidden}
+a{color:inherit;text-decoration:none}img{max-width:100%;display:block}
+#bgCanvas{position:fixed;top:0;left:0;width:100%;height:100%;z-index:0;pointer-events:none}
+
+/* NAV — DSD style: clean, minimal */
+nav{position:fixed;top:0;left:0;width:100%;z-index:100;padding:1.1rem 2.5rem;display:flex;align-items:center;justify-content:space-between;backdrop-filter:blur(14px);background:rgba(248,250,249,.72);border-bottom:1px solid var(--b)}
+nav.scrolled{box-shadow:0 1px 12px rgba(0,0,0,.06)}
+.nl{display:flex;align-items:center;gap:.55rem;font-size:15px;font-weight:700;letter-spacing:.04em;color:var(--g8)}
+.nl svg{width:28px;height:28px}
+.nk{display:flex;gap:2.4rem;align-items:center}
+.nk a{font-size:14px;font-weight:400;color:var(--td);transition:color .25s}
+.nk a:hover{color:var(--g6)}
+.nc{background:var(--g6);color:#fff!important;padding:.5rem 1.4rem;border-radius:6px;font-size:13px;font-weight:500;transition:all .25s}
+.nc:hover{background:var(--g7);transform:translateY(-1px)}
+.hm{display:none;flex-direction:column;gap:5px;cursor:pointer;z-index:101}
+.hm span{display:block;width:22px;height:2px;background:var(--t)}
+
+section{position:relative;z-index:1;padding:6.5rem 2rem}
+.si{max-width:1080px;margin:0 auto;position:relative;z-index:2}
+.s-bg{position:absolute;inset:0;z-index:1}
+.hero-bg{background:linear-gradient(165deg,rgba(240,253,244,.72) 0%,rgba(255,255,255,.6) 50%,rgba(240,253,244,.72) 100%)}
+.white-bg{background:rgba(255,255,255,.68)}
+.green-bg{background:linear-gradient(180deg,rgba(255,255,255,.68),rgba(240,253,244,.72))}
+
+/* TYPOGRAPHY — exact DSD pattern */
+/* Labels: 11px, 600, uppercase, .2em spacing, green */
+.sl{font-family:'DM Sans',sans-serif;font-size:11px;font-weight:600;letter-spacing:.2em;text-transform:uppercase;color:var(--g6);margin-bottom:.8rem}
+/* Titles: Playfair Display, 400 weight, large */
+.st{font-family:'Playfair Display',Georgia,serif;font-size:clamp(28px,4.5vw,46px);font-weight:400;color:var(--g9);line-height:1.2;margin-bottom:1rem}
+.st em{font-style:italic;color:var(--g6);font-weight:400}
+/* Description: 16px, 400, muted */
+.sd{font-size:16px;font-weight:400;color:var(--td);max-width:640px;line-height:1.75;margin-bottom:3rem}
+
+/* HERO */
+.hero{min-height:100vh;display:flex;align-items:center;justify-content:center;overflow:hidden}
+.hc{position:relative;z-index:2;text-align:center;max-width:900px;padding:0 2rem}
+.hb-n{font-family:'DM Sans',sans-serif;font-size:clamp(48px,8vw,88px);font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--g8);margin-bottom:.4rem;animation:fu .7s ease both}
+.hb-t{font-size:13px;font-weight:500;letter-spacing:.18em;text-transform:uppercase;color:var(--g6);margin-bottom:2.2rem;animation:fu .7s .08s ease both}
+.hero h1{font-family:'Playfair Display',serif;font-size:clamp(22px,3vw,34px);font-weight:400;line-height:1.35;color:var(--tb);margin-bottom:1.5rem;animation:fu .7s .16s ease both}
+.hero h1 em{font-style:italic;color:var(--g6);font-weight:400}
+.hero-sub{font-size:16px;font-weight:400;color:var(--td);max-width:620px;margin:0 auto 2.4rem;line-height:1.75;animation:fu .7s .24s ease both}
+.hv{display:flex;justify-content:center;gap:1.2rem;flex-wrap:wrap;animation:fu .7s .32s ease both}
+.hp{display:inline-flex;align-items:center;gap:.4rem;background:rgba(255,255,255,.85);border:1px solid var(--gb);border-radius:100px;padding:.4rem 1rem;font-size:12px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--g7)}
+.hp::before{content:'';width:5px;height:5px;border-radius:50%;background:var(--g5)}
+.hs{position:absolute;bottom:2.5rem;left:50%;transform:translateX(-50%);z-index:3;animation:fl 3s infinite ease-in-out}
+.hs svg{width:22px;height:22px;stroke:var(--tl);stroke-width:1.5;fill:none}
+/* Hero CTA buttons */
+.hero-ctas{display:flex;justify-content:center;gap:1rem;margin-top:2rem;animation:fu .7s .4s ease both}
+.hero-cta-primary{background:var(--g6);color:#fff;padding:.65rem 1.8rem;border-radius:8px;font-size:14px;font-weight:600;transition:all .25s;display:inline-block}
+.hero-cta-primary:hover{background:var(--g7);transform:translateY(-1px)}
+.hero-cta-secondary{background:transparent;color:var(--g7);padding:.65rem 1.8rem;border-radius:8px;font-size:14px;font-weight:500;border:1px solid var(--gb);transition:all .25s;display:inline-block}
+.hero-cta-secondary:hover{border-color:var(--g6);background:rgba(22,163,74,.04)}
+
+/* CARDS */
+.pa{background:rgba(255,255,255,.88);border:1px solid var(--gb);border-radius:14px;padding:2.5rem;margin-bottom:2rem;position:relative;overflow:hidden}
+.pa::before{content:'';position:absolute;top:0;left:0;width:4px;height:100%;background:linear-gradient(180deg,var(--g5),var(--g6))}
+.pa .dt{font-size:12px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--g6);margin-bottom:.6rem}
+.pa h3{font-family:'Playfair Display',serif;font-size:24px;font-weight:500;color:var(--g9);margin-bottom:.8rem}
+.pa p{font-size:15px;color:var(--tb);line-height:1.75}
+.eu-g{display:grid;grid-template-columns:1fr 1fr;gap:1.4rem;margin-bottom:3rem}
+.eu-c{background:rgba(255,255,255,.85);border:1px solid var(--b);border-radius:12px;padding:1.8rem;transition:all .3s}
+.eu-c:hover{border-color:var(--gb);box-shadow:var(--sh)}
+.eu-c .dt{font-size:12px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--g6);margin-bottom:.4rem}
+.eu-c h4{font-size:18px;font-weight:700;color:var(--g9);margin-bottom:.5rem}
+.eu-c p{font-size:14px;color:var(--td);line-height:1.7}
+.pg{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:1.4rem}
+.pc{background:rgba(255,255,255,.88);border:1px solid var(--b);border-radius:12px;padding:1.8rem;transition:all .3s}
+.pc:hover{border-color:var(--gb);box-shadow:var(--sl);transform:translateY(-3px)}
+.pc .ic{width:42px;height:42px;background:var(--g0);border:1px solid var(--gb);border-radius:10px;display:flex;align-items:center;justify-content:center;margin-bottom:1rem;font-size:1.1rem}
+.pc h4{font-size:17px;font-weight:700;color:var(--g9);margin-bottom:.4rem}
+.pc p{font-size:14px;color:var(--td);line-height:1.7}
+
+/* USE CASES */
+.ug{display:grid;grid-template-columns:1fr 1fr;gap:1.4rem}
+.uc{background:rgba(255,255,255,.85);border:1px solid var(--b);border-radius:12px;padding:1.8rem;transition:all .3s}
+.uc:hover{border-color:var(--gb);box-shadow:var(--sh)}
+.uc .nm{font-size:13px;font-weight:600;letter-spacing:.06em;color:var(--g6);margin-bottom:.5rem}
+.uc h4{font-size:18px;font-weight:700;color:var(--g9);margin-bottom:.4rem}
+.uc p{font-size:14px;color:var(--tb);line-height:1.7}
+.uc.full{grid-column:1/-1}
+
+/* SOLUTION */
+.sg{display:grid;grid-template-columns:1fr 1fr;gap:2rem;margin-bottom:3rem}
+.sb{background:rgba(255,255,255,.88);border:1px solid var(--gb);border-radius:14px;padding:2.5rem;transition:all .3s}
+.sb:hover{box-shadow:var(--sl);transform:translateY(-2px)}
+.sb .tg{font-size:11px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--g6);margin-bottom:.6rem}
+.sb h3{font-family:'Playfair Display',serif;font-size:24px;font-weight:500;color:var(--g9);margin-bottom:.6rem}
+.sb p{font-size:15px;color:var(--tb);line-height:1.7}
+.sb ul{list-style:none;margin-top:1rem}
+.sb ul li{font-size:14px;color:var(--tb);padding:.3rem 0 .3rem 1.2rem;position:relative;line-height:1.6}
+.sb ul li::before{content:'';position:absolute;left:0;top:.65rem;width:6px;height:6px;border-radius:50%;background:var(--g5)}
+/* Integration banner */
+.int-banner{background:rgba(255,255,255,.9);border:1px solid var(--b);border-radius:12px;padding:2rem 2.5rem;margin-bottom:3rem;text-align:center}
+.int-banner h4{font-size:16px;font-weight:600;color:var(--g9);margin-bottom:.5rem}
+.int-banner p{font-size:14px;color:var(--td);line-height:1.7}
+.int-logos{display:flex;justify-content:center;gap:2rem;flex-wrap:wrap;margin-top:1rem}
+.int-logos span{font-size:13px;font-weight:600;color:var(--tl);letter-spacing:.02em}
+/* HITL */
+.hb2{background:linear-gradient(135deg,var(--g8),var(--g9));border-radius:14px;padding:2.5rem 3rem;margin-bottom:3rem;position:relative;overflow:hidden}
+.hb2::after{content:'';position:absolute;top:-40%;right:-10%;width:300px;height:300px;border-radius:50%;background:rgba(34,197,94,.08)}
+.hb2 .tg{font-size:11px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--g4);margin-bottom:.5rem}
+.hb2 h3{font-family:'Playfair Display',serif;font-size:24px;font-weight:500;color:#fff;margin-bottom:.6rem}
+.hb2 p{font-size:15px;color:rgba(255,255,255,.72);line-height:1.75;max-width:680px}
+/* Pilot CTA */
+.pilot-cta{background:linear-gradient(135deg,var(--g0),#fff);border:2px solid var(--g5);border-radius:14px;padding:2rem 2.5rem;text-align:center}
+.pilot-cta h4{font-family:'Playfair Display',serif;font-size:22px;font-weight:400;color:var(--g9);margin-bottom:.4rem}
+.pilot-cta h4 em{font-style:italic;color:var(--g6)}
+.pilot-cta p{font-size:15px;color:var(--td);margin-bottom:1.2rem;line-height:1.7}
+.pilot-cta a{display:inline-block;background:var(--g6);color:#fff;padding:.6rem 2rem;border-radius:8px;font-size:14px;font-weight:600;transition:all .25s}
+.pilot-cta a:hover{background:var(--g7);transform:translateY(-1px)}
+
+/* TECH */
+.tt{text-align:center;margin-bottom:2rem}
+.tt h3{font-family:'Playfair Display',serif;font-size:clamp(24px,3vw,32px);font-weight:400;color:var(--g9);margin-bottom:.5rem}
+.tt h3 em{font-style:italic;color:var(--g6)}
+.tt p{font-size:16px;color:var(--td);max-width:600px;margin:0 auto;line-height:1.7}
+.ab{background:rgba(255,255,255,.9);border:1px solid var(--b);border-radius:14px;padding:2rem;box-shadow:var(--sh);margin-bottom:2rem;overflow-x:auto}
+.ab svg{display:block;margin:0 auto;max-width:100%}
+.eg{display:grid;grid-template-columns:1fr 1fr;gap:2rem;margin-top:2rem}
+.eb{background:rgba(255,255,255,.88);border:1px solid var(--b);border-radius:12px;padding:2rem;transition:all .3s}
+.eb:hover{border-color:var(--gb);box-shadow:var(--sh)}
+.eb .tg{font-size:11px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--g6);margin-bottom:.5rem}
+.eb h4{font-size:20px;font-weight:700;color:var(--g9);margin-bottom:.6rem}
+.eb p{font-size:15px;color:var(--tb);line-height:1.7}
+.eb p+p{margin-top:.5rem}
+/* Data sovereignty box */
+.ds-box{background:rgba(255,255,255,.9);border:1px solid var(--gb);border-radius:12px;padding:2rem;margin-top:2rem}
+.ds-box h4{font-size:18px;font-weight:700;color:var(--g9);margin-bottom:.5rem}
+.ds-box p{font-size:14px;color:var(--tb);line-height:1.7}
+.en{text-align:center;margin-top:1.5rem;font-size:13px;color:var(--tl);font-style:italic}
+
+/* CONNECT */
+.cg{display:grid;grid-template-columns:1fr 1fr;gap:4rem;align-items:start}
+.ci h3{font-family:'Playfair Display',serif;font-size:26px;font-weight:400;color:var(--g9);margin-bottom:.8rem}
+.ci h3 em{font-style:italic;color:var(--g6)}
+.ci>p{font-size:15px;color:var(--tb);line-height:1.7;margin-bottom:2rem}
+.cd{display:flex;align-items:flex-start;gap:1rem;margin-bottom:1.3rem}
+.cd .ci2{width:38px;height:38px;background:var(--g0);border:1px solid var(--gb);border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:.95rem}
+.cd .cl{font-size:11px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--tl);margin-bottom:.1rem}
+.cd .cv{font-size:15px;color:var(--g9)}.cd .cv a{color:var(--g6);transition:color .2s}.cd .cv a:hover{color:var(--g8)}
+.cf{background:rgba(255,255,255,.9);border:1px solid var(--b);border-radius:14px;padding:2.5rem}
+.cf h4{font-size:18px;font-weight:600;color:var(--g9);margin-bottom:1.3rem}
+.fg{margin-bottom:1rem}
+.fg label{display:block;font-size:12px;font-weight:500;letter-spacing:.04em;text-transform:uppercase;color:var(--td);margin-bottom:.3rem}
+.fg input,.fg textarea{width:100%;background:#fff;border:1px solid var(--b);border-radius:8px;padding:.7rem 1rem;font-family:'DM Sans',sans-serif;font-size:14px;color:var(--t);outline:none;transition:border-color .25s,box-shadow .25s}
+.fg input:focus,.fg textarea:focus{border-color:var(--g5);box-shadow:0 0 0 3px rgba(22,163,74,.08)}
+.fg textarea{resize:vertical;min-height:90px}
+.fb{width:100%;background:var(--g6);color:#fff;border:none;padding:.8rem;border-radius:8px;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:600;cursor:pointer;transition:all .25s}
+.fb:hover{background:var(--g7);transform:translateY(-1px)}
+
+footer{position:relative;z-index:1;border-top:1px solid var(--b);padding:2.5rem;text-align:center;background:rgba(248,250,249,.75)}
+footer p{font-size:13px;color:var(--tl);line-height:1.7}footer a{color:var(--g6)}
+
+@keyframes fu{from{opacity:0;transform:translateY(22px)}to{opacity:1;transform:translateY(0)}}
+@keyframes fl{0%,100%{transform:translateX(-50%) translateY(0)}50%{transform:translateX(-50%) translateY(7px)}}
+.fi{opacity:0;transform:translateY(28px);transition:opacity .65s ease,transform .65s ease}.fi.v{opacity:1;transform:translateY(0)}
+
+@media(max-width:768px){nav{padding:.85rem 1.2rem}.nk{display:none;position:fixed;top:0;left:0;width:100%;height:100vh;background:rgba(248,250,249,.95);backdrop-filter:blur(16px);flex-direction:column;justify-content:center;align-items:center;gap:2rem;z-index:100}.nk.open{display:flex}.hm{display:flex}.sg,.ug,.eu-g,.eg,.cg{grid-template-columns:1fr}.uc.full{grid-column:auto}section{padding:4rem 1.2rem}.hv{gap:.7rem}.hb-n{letter-spacing:.06em}.hb2{padding:2rem}.hero-ctas{flex-direction:column;align-items:center}}
+</style>
+</head>
+<body>
+<canvas id="bgCanvas"></canvas>
+
+<nav id="mn"><a href="#hero" class="nl"><svg viewBox="0 0 32 32" fill="none"><rect width="32" height="32" rx="6" fill="#16a34a"/><path d="M16 7a5 5 0 0 0-5 5v3h-1.5a1 1 0 0 0-1 1v8.5a1 1 0 0 0 1 1h13a1 1 0 0 0 1-1V16a1 1 0 0 0-1-1H21v-3a5 5 0 0 0-5-5zm-2.5 8v-3a2.5 2.5 0 1 1 5 0v3z" fill="white"/></svg>VERIDISKEY</a><div class="nk" id="nv"><a href="#problem" onclick="cn()">The Problem</a><a href="#solution" onclick="cn()">The Solution</a><a href="#technology" onclick="cn()">Technology</a><a href="/portal/" class="nc" style="background:transparent;color:var(--g6);border:1px solid var(--gb);margin-right:.4rem">Demo Portal</a><a href="#connect" class="nc" onclick="cn()">Connect With Us</a></div><div class="hm" onclick="tn()"><span></span><span></span><span></span></div></nav>
+
+<!-- ═══ HERO ═══ -->
+<section class="hero" id="hero"><div class="s-bg hero-bg"></div><div class="hc">
+  <div class="hb-n">Veridiskey</div>
+  <div class="hb-t">Trusted Infrastructure for Digital Cities</div>
+  <h1>Verified Credentials. Transparent Procurement.<br><em>Immutable Trust.</em></h1>
+  <p class="hero-sub">The next generation of digital infrastructure for cities and organisations that want to prove — not just promise — that every contractor is qualified, every contract is accountable, and every citizen can verify it.</p>
+  <div class="hv"><span class="hp">Transparency</span><span class="hp">Traceability</span><span class="hp">Trust</span><span class="hp">Digital Transformation</span></div>
+  <div class="hero-ctas">
+    <a href="#connect" class="hero-cta-primary">Request a Pilot</a>
+    <a href="#solution" class="hero-cta-secondary">See How It Works</a>
+  </div>
+</div><a href="#problem" class="hs"><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12l7 7 7-7"/></svg></a></section>
+
+
+<!-- ═══ DEMO PORTAL BAND ═══ -->
+<section id="demo" style="padding:4rem 2rem"><div class="s-bg" style="background:linear-gradient(180deg,rgba(240,253,244,.85),rgba(255,255,255,.9))"></div><div class="si">
+  <div class="fi" style="background:rgba(255,255,255,.92);border:1px solid var(--gb);border-radius:16px;padding:3rem 3.5rem;display:grid;grid-template-columns:1fr auto;gap:3rem;align-items:center">
+    <div>
+      <div class="sl">Live Demo</div>
+      <h2 style="font-family:'Playfair Display',serif;font-size:clamp(22px,3vw,32px);font-weight:400;color:var(--g9);margin-bottom:.7rem">Experience the platform.<br><em style="color:var(--g6)">Try the live demo portal.</em></h2>
+      <p style="font-size:15px;color:var(--td);line-height:1.75;max-width:520px;margin-bottom:1.5rem">Four role-based demonstrations with real EBSI credential flows and ROOTKey certification. No login required.</p>
+      <div style="display:flex;gap:.6rem;flex-wrap:wrap">
+        <span class="hp">Procurement Officer</span>
+        <span class="hp">Contractor Wallet</span>
+        <span class="hp">Credential Issuer</span>
+        <span class="hp">Public Auditor</span>
+      </div>
+    </div>
+    <div style="text-align:center;flex-shrink:0">
+      <a href="/portal/" style="display:inline-flex;flex-direction:column;align-items:center;gap:.8rem;background:var(--g6);color:#fff;padding:1.4rem 2.6rem;border-radius:10px;font-size:15px;font-weight:600;transition:all .25s;text-decoration:none">
+        <svg width="28" height="28" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+        Enter Demo Portal
+      </a>
+      <p style="font-size:11px;color:var(--tl);margin-top:.8rem">No account required</p>
+    </div>
+  </div>
+</div></section>
+
+<!-- ═══ THE PROBLEM ═══ -->
+<section id="problem"><div class="s-bg white-bg"></div><div class="si">
+  <div class="sl">The Problem</div>
+  <h2 class="st">When organisations cannot <em>verify trust</em></h2>
+  <p class="sd">Every day, across every European city, infrastructure maintenance is performed by contractors whose qualifications have not been properly verified — because the system to do so is slow, fragmented, and built on paper.</p>
+  <div class="pa fi"><div class="dt">8 April 2024 · Lisbon, Portugal</div><h3>The Glória Elevator — A Visible Failure of Accountability</h3><p>When the Elevador da Glória derailed and injured passengers, a critical question emerged: did the maintenance company hold the correct qualifications? It proved impossible to answer quickly. Documentation existed somewhere — in email attachments, PDFs, filing cabinets — but there was no single, verifiable, real-time source of truth. This is not an isolated failure. It is a systemic problem across every European city.</p></div>
+  <div class="eu-g">
+    <div class="eu-c fi"><div class="dt">14 August 2018 · Genoa, Italy</div><h4>Morandi Bridge Collapse — 43 Lives Lost</h4><p>The private concessionaire had been aware of structural risks but failed to act. The maintenance company also owned the inspection company — a self-regulated system with no independent verification or tamper-proof record of accountability.</p></div>
+    <div class="eu-c fi"><div class="dt">14 June 2017 · London, United Kingdom</div><h4>Grenfell Tower Fire — 72 Lives Lost</h4><p>Contractors failed to meet building regulations during a refurbishment. Certification of cladding materials was inadequate. No system existed to verify every contractor and material across the entire sub-contractor chain.</p></div>
+  </div>
+  <div class="pg">
+    <div class="pc fi"><div class="ic">📄</div><h4>Paper-Based Credentials</h4><p>Qualifications stored in PDFs and email folders with no central, real-time verification layer. Easy to forge, impossible to track at scale.</p></div>
+    <div class="pc fi"><div class="ic">⏱️</div><h4>3–5 Days Per Verification</h4><p>Procurement officers spend 15–20 hours weekly chasing PDFs, emailing supply chains, and cross-referencing spreadsheets to check a single expired policy.</p></div>
+    <div class="pc fi"><div class="ic">🔗</div><h4>Invisible Sub-contractor Chains</h4><p>The winning bidder may be checked — but their sub-contractors are invisible. The most critical blind spot in risk management for any public authority.</p></div>
+    <div class="pc fi"><div class="ic">🔒</div><h4>No Tamper-Proof Audit Trail</h4><p>When incidents happen, there is no immutable record to establish responsibility — officers must search old emails to prove they verified a PDF years ago.</p></div>
+    <div class="pc fi"><div class="ic">💰</div><h4>Procurement Leakage</h4><p>Councils pay non-compliant contractors because no system locks payments to verified compliance. In a €6.5M project, even 2% leakage means €130,000 lost per contract.</p></div>
+    <div class="pc fi"><div class="ic">🌍</div><h4>€2 Trillion at Stake</h4><p>European public procurement exceeds €2 trillion annually. This fragmented system affects every municipality, concessionaire, and infrastructure operator on the continent.</p></div>
+  </div>
+</div></section>
+
+<!-- ═══ USE CASES ═══ -->
+<section id="usecases"><div class="s-bg green-bg"></div><div class="si">
+  <div class="sl">Cross-Sector Impact</div>
+  <h2 class="st">One platform. Five dimensions of <em>digital governance.</em></h2>
+  <p class="sd">Veridiskey enables cities to demonstrate that their governance is evolving — using tamper-proof digital infrastructure that citizens and auditors can independently verify.</p>
+  <div class="ug">
+    <div class="uc fi"><div class="nm">01 · Digitalisation</div><h4>Procure-to-Pay Command Centre</h4><p>Connecting Procurement, Finance, and Operations into a single immutable layer. Smart Invoice Gates lock invoices until 100% of compliance gates are verified by the responsible officer — eliminating overpayments, fraud, and audit-preparation time.</p></div>
+    <div class="uc fi"><div class="nm">02 · Social Inclusion</div><h4>Enforcing Social Value Pledges</h4><p>Contractors win bids by promising local jobs and community investment. Veridiskey hard-codes those commitments as locked deliverables — payment milestones are cryptographically blocked until the responsible officer verifies evidence of delivery.</p></div>
+    <div class="uc fi"><div class="nm">03 · Critical Infrastructure</div><h4>Zero-Trust Supply Chain Security</h4><p>Before any contractor is granted physical or digital access to critical city assets, they must clear the Veridiskey ledger. If a cybersecurity or safety certification expires, the system instantly flags the risk to the authority's dashboard.</p></div>
+    <div class="uc fi"><div class="nm">04 · Climate Action</div><h4>Green Retrofit Verification</h4><p>Cities invest millions in energy retrofits but have no immutable proof that contractors use compliant materials. Veridiskey demands specific environmental evidence — sealed with cryptographic hashes that auditors and citizens can independently verify.</p></div>
+    <div class="uc full fi"><div class="nm">05 · Urban Mobility</div><h4>Dynamic SLA Enforcement</h4><p>Long-term maintenance contracts for EV charging, transit hubs, or LED streetlighting are notoriously difficult to monitor. Veridiskey integrates SLA ledgers — missed response windows trigger automatic penalty calculation, deducted from the next verified invoice. Absolute accountability in critical mobility infrastructure.</p></div>
+  </div>
+</div></section>
+
+<!-- ═══ THE SOLUTION ═══ -->
+<section id="solution"><div class="s-bg white-bg"></div><div class="si">
+  <div class="sl">The Solution</div>
+  <h2 class="st">Two modules. One <em>trusted platform.</em></h2>
+  <p class="sd">Veridiskey integrates with your existing systems — it does not replace them. Your organisation sees a dashboard. The cryptographic infrastructure works invisibly underneath.</p>
+  <div class="sg">
+    <div class="sb fi"><div class="tg">Module 01</div><h3>Veridiskey Verify</h3><p>Trusted contractor credentials — cryptographically secured, instantly verifiable, tamper-proof.</p><ul><li>Digital credential wallets for every contractor</li><li>Credentials issued by authorised regulators, professional bodies, and insurers</li><li>Real-time verification in under 2 minutes — not days</li><li>Automatic alerts when licences expire or are revoked</li><li>Complete sub-contractor chain visibility at every level</li><li>Every verification event permanently and immutably recorded</li></ul></div>
+    <div class="sb fi"><div class="tg">Module 02</div><h3>Veridiskey Open</h3><p>Transparent procurement with immutable audit trails and automated payment compliance.</p><ul><li>Every tender, evaluation and award permanently recorded</li><li>Smart Invoice Gates — payments locked until full compliance</li><li>Milestone-based payment automation — weeks reduced to hours</li><li>Public transparency dashboard for citizens and auditors</li><li>Social value pledges cryptographically enforced post-award</li><li>Audit preparation drops from weeks to minutes</li></ul></div>
+  </div>
+
+  <!-- Integration reassurance -->
+  <div class="int-banner fi">
+    <h4>Integrates with your existing systems — does not replace them</h4>
+    <p>Veridiskey connects to your current procurement and financial platforms through standard APIs. No system migration required.</p>
+    <div class="int-logos"><span>SAP</span><span>Oracle</span><span>Vortal</span><span>Microsoft Dynamics</span><span>Any ERP via API</span></div>
+  </div>
+
+  <div class="hb2 fi"><div class="tg">Human in the Loop</div><h3>Management by Exception — Not Hunting for Needles</h3><p>Legacy systems are passive databases where officers must manually search for issues. Veridiskey is a conscious system: the AI and dynamic ledger do 90% of the heavy lifting. The officer logs in and the verification queue pushes exactly what needs attention. One click hashes the data, locks the record, and controls the flow of public funds. Every action is sealed with a SHA-256 hash — providing mathematical proof of due diligence and complete accountability for the public servant.</p></div>
+
+  <!-- Pilot CTA -->
+  <div class="pilot-cta fi">
+    <h4>Start with a <em>90-day pilot</em></h4>
+    <p>One department. One asset type. 3–5 credential types. Measurable results in under 8 weeks — verification time, credentials flagged, cost per verification. No long-term commitment required.</p>
+    <a href="#connect">Request a Pilot Conversation</a>
+  </div>
+</div></section>
+
+<!-- ═══ TECHNOLOGY ═══ -->
+<section id="technology"><div class="s-bg green-bg"></div><div class="si">
+  <div class="sl" style="text-align:center">Technology</div>
+  <div class="tt"><h3>Built on European open standards and <em>trusted digital infrastructure</em></h3><p>Three integrated layers — from user-facing dashboards to the pan-European network. Your data stays yours. Credentials live on EU public infrastructure.</p></div>
+  <div class="ab fi"><svg viewBox="0 0 900 520" xmlns="http://www.w3.org/2000/svg" font-family="'DM Sans',system-ui,sans-serif"><rect x="10" y="10" width="880" height="150" rx="12" fill="#f0fdf4" stroke="#16a34a" stroke-opacity=".2"/><text x="30" y="50" font-size="11" font-weight="700" fill="#16a34a" letter-spacing="1">LAYER 1</text><text x="30" y="72" font-size="14" font-weight="600" fill="#052e16">VERIDISKEY SaaS PLATFORM</text><rect x="200" y="25" width="200" height="55" rx="8" fill="white" stroke="#d1d5db"/><text x="300" y="48" text-anchor="middle" font-size="10" font-weight="600" fill="#14532d">Municipality &amp; Regulators</text><text x="300" y="63" text-anchor="middle" font-size="8.5" fill="#6b8577">Contract Mgmt · Document Issuance</text><rect x="420" y="25" width="200" height="55" rx="8" fill="white" stroke="#d1d5db"/><text x="520" y="48" text-anchor="middle" font-size="10" font-weight="600" fill="#14532d">Contractor</text><text x="520" y="63" text-anchor="middle" font-size="8.5" fill="#6b8577">Digital Wallet · Submissions</text><rect x="640" y="25" width="200" height="55" rx="8" fill="white" stroke="#d1d5db"/><text x="740" y="48" text-anchor="middle" font-size="10" font-weight="600" fill="#14532d">Audit &amp; Public</text><text x="740" y="63" text-anchor="middle" font-size="8.5" fill="#6b8577">Citizen Transparency Dashboard</text><rect x="200" y="95" width="640" height="50" rx="8" fill="white" stroke="#d1d5db"/><text x="520" y="118" text-anchor="middle" font-size="10" font-weight="600" fill="#14532d">Credential Issuer Dashboard</text><text x="520" y="132" text-anchor="middle" font-size="8.5" fill="#6b8577">ANAC · Ordem dos Engenheiros · ACT · Insurers</text><line x1="450" y1="160" x2="450" y2="185" stroke="#16a34a" stroke-width="1.5" stroke-dasharray="4,3" marker-end="url(#aw)"/><defs><marker id="aw" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M 0 0 L 10 5 L 0 10 z" fill="#16a34a"/></marker></defs><rect x="10" y="185" width="880" height="150" rx="12" fill="#f0fdf4" stroke="#16a34a" stroke-opacity=".25"/><text x="30" y="220" font-size="11" font-weight="700" fill="#16a34a" letter-spacing="1">LAYER 2</text><text x="30" y="242" font-size="14" font-weight="600" fill="#052e16">VERIDISKEY MODULES + EBSI</text><rect x="200" y="200" width="150" height="50" rx="8" fill="white" stroke="#d1d5db"/><text x="275" y="221" text-anchor="middle" font-size="9.5" font-weight="600" fill="#14532d">Verify API</text><text x="275" y="236" text-anchor="middle" font-size="8" fill="#6b8577">Issue · Verify · Revoke</text><rect x="365" y="200" width="150" height="50" rx="8" fill="white" stroke="#d1d5db"/><text x="440" y="221" text-anchor="middle" font-size="9.5" font-weight="600" fill="#14532d">Smart Contracts</text><text x="440" y="236" text-anchor="middle" font-size="8" fill="#6b8577">Automated Compliance</text><rect x="530" y="200" width="150" height="50" rx="8" fill="white" stroke="#d1d5db"/><text x="605" y="221" text-anchor="middle" font-size="9.5" font-weight="600" fill="#14532d">Workflow Engine</text><text x="605" y="236" text-anchor="middle" font-size="8" fill="#6b8577">SLA · Milestones</text><rect x="695" y="200" width="150" height="50" rx="8" fill="white" stroke="#d1d5db"/><text x="770" y="221" text-anchor="middle" font-size="9.5" font-weight="600" fill="#14532d">ERP Integration</text><text x="770" y="236" text-anchor="middle" font-size="8" fill="#6b8577">SAP · Oracle · Vortal</text><line x1="450" y1="335" x2="450" y2="360" stroke="#16a34a" stroke-width="1.5" stroke-dasharray="4,3" marker-end="url(#aw)"/><rect x="10" y="360" width="880" height="150" rx="12" fill="#f0fdf4" stroke="#16a34a" stroke-opacity=".3"/><text x="30" y="395" font-size="11" font-weight="700" fill="#16a34a" letter-spacing="1">LAYER 3</text><text x="30" y="417" font-size="14" font-weight="600" fill="#052e16">EBSI — EU PUBLIC INFRASTRUCTURE</text><rect x="200" y="375" width="130" height="50" rx="8" fill="white" stroke="#d1d5db"/><text x="265" y="396" text-anchor="middle" font-size="9.5" font-weight="600" fill="#14532d">DID Registry</text><rect x="345" y="375" width="130" height="50" rx="8" fill="white" stroke="#d1d5db"/><text x="410" y="396" text-anchor="middle" font-size="9.5" font-weight="600" fill="#14532d">Trusted Issuers</text><rect x="490" y="375" width="130" height="50" rx="8" fill="white" stroke="#d1d5db"/><text x="555" y="396" text-anchor="middle" font-size="9.5" font-weight="600" fill="#14532d">Status List</text><rect x="635" y="375" width="130" height="50" rx="8" fill="white" stroke="#d1d5db"/><text x="700" y="396" text-anchor="middle" font-size="9.5" font-weight="600" fill="#14532d">Audit Ledger</text><rect x="200" y="440" width="565" height="45" rx="8" fill="white" stroke="#d1d5db"/><text x="482" y="460" text-anchor="middle" font-size="9.5" font-weight="600" fill="#14532d">Hyperledger Besu · Proof of Authority · 27+ EU Member State Nodes</text></svg></div>
+  <div class="eg">
+    <div class="eb fi"><div class="tg">How It Works</div><h4>Trusted Digital Infrastructure</h4><p>Veridiskey uses a distributed ledger — a shared, tamper-proof record maintained across a network of European institutions. Every credential verification, contract milestone, and payment authorisation is permanently recorded. No single party — not the contractor, not the municipality, not Veridiskey — can alter the history.</p><p>This is not cryptocurrency. Veridiskey runs on a permissioned network — no mining, no tokens, no energy waste. Validated by trusted European institutions using Proof of Authority consensus.</p></div>
+    <div class="eb fi"><div class="tg">European Public Infrastructure</div><h4>Built on EBSI</h4><p>The European Blockchain Services Infrastructure (EBSI) is a pan-European network created by the European Commission for trusted digital public services. Governed by EUROPEUM-EDIC — Portugal is a founding member.</p><p>Veridiskey is EBSI-native. Credentials follow the W3C Verifiable Credentials standard — interoperable across all 27+ EU Member States. A contractor verified in Lisbon is instantly verifiable in Madrid, Berlin, or Paris.</p></div>
+  </div>
+  <!-- Data sovereignty -->
+  <div class="ds-box fi">
+    <h4>Your Data Stays Yours</h4>
+    <p>Personal data never touches the shared ledger — only cryptographic proofs. GDPR compliance is an architectural feature, not an added layer. Credentials live on EU public infrastructure (EBSI) maintained by Member States. If Veridiskey ceases to exist, your credentials and audit trail remain valid and verifiable on the European network — your data sovereignty is guaranteed by design.</p>
+  </div>
+  <p class="en">W3C Verifiable Credentials · eIDAS 2.0 · GDPR by Design · EUROPEUM-EDIC (Portugal founding member) · Aligned with EU Digital Europe Programme</p>
+</div></section>
+
+<!-- ═══ CONNECT ═══ -->
+<section id="connect"><div class="s-bg white-bg"></div><div class="si">
+  <div class="cg">
+    <div class="ci fi">
+      <div class="sl">Connect With Us</div>
+      <h3>Ready to bring <em>verified trust</em> to your city?</h3>
+      <p>Whether you are a municipal authority exploring digital transformation, a concessionaire managing infrastructure contractors, a private operator, or an investor in public infrastructure — we welcome a conversation about how Veridiskey can work for your organisation.</p>
+      <div class="cd"><div class="ci2">👤</div><div><div class="cl">Paulo Reis</div><div class="cv"><a href="mailto:paulo@dsdltdgroup.com">paulo@dsdltdgroup.com</a></div></div></div>
+      <div class="cd"><div class="ci2">👤</div><div><div class="cl">Gary Bennett</div><div class="cv"><a href="mailto:gary@dsdltdgroup.com">gary@dsdltdgroup.com</a></div></div></div>
+      <div class="cd"><div class="ci2">📞</div><div><div class="cl">United Kingdom</div><div class="cv"><a href="tel:+447722030398">+44 7722 030398</a></div></div></div>
+      <div class="cd"><div class="ci2">📞</div><div><div class="cl">Portugal</div><div class="cv"><a href="tel:+351917518041">+351 917 518 041</a></div></div></div>
+      <div class="cd"><div class="ci2">🌐</div><div><div class="cl">Web</div><div class="cv"><a href="https://veridiskey.com">veridiskey.com</a></div></div></div>
+    </div>
+    <!-- FORM — uses Formspree for email delivery -->
+    <!-- TO ACTIVATE: Sign up at formspree.io, create a form, replace YOUR_FORM_ID below -->
+    <form class="cf fi" action="https://formspree.io/f/mqewplao" method="POST">
+      <h4>Send us a message</h4>
+      <input type="hidden" name="_subject" value="New enquiry from veridiskey.com">
+      <input type="hidden" name="_cc" value="gary@dsdltdgroup.com">
+      <div class="fg"><label>Your Name *</label><input type="text" name="name" placeholder="Full name" required></div>
+      <div class="fg"><label>Email *</label><input type="email" name="email" placeholder="you@organisation.com" required></div>
+      <div class="fg"><label>Organisation</label><input type="text" name="organisation" placeholder="Your organisation"></div>
+      <div class="fg"><label>Message *</label><textarea name="message" placeholder="Tell us about your interest in Veridiskey — pilot enquiries, partnerships, or investment." required></textarea></div>
+      <button type="submit" class="fb">Send Message</button>
+    </form>
+  </div>
+</div></section>
+
+<footer><p>© 2026 DSD — Digital Systems &amp; Design Limited · <a href="https://veridiskey.com">veridiskey.com</a> · <a href="https://dsdltdgroup.com" target="_blank">dsdltdgroup.com</a> · Strategic. Immutable. Human-Centred.</p></footer>
+
+<script>
+function tn(){document.getElementById('nv').classList.toggle('open')}
+function cn(){document.getElementById('nv').classList.remove('open')}
+window.addEventListener('scroll',function(){document.getElementById('mn').classList.toggle('scrolled',window.scrollY>40)});
+var ob=new IntersectionObserver(function(e){e.forEach(function(x){if(x.isIntersecting){x.target.classList.add('v');ob.unobserve(x.target)}})},{threshold:.12});
+document.querySelectorAll('.fi').forEach(function(el){ob.observe(el)});
+
+/* ═══════════ BACKGROUND ANIMATION ═══════════ */
+(function(){
+var c=document.getElementById('bgCanvas'),X=c.getContext('2d'),W,H,dpr;
+function resize(){dpr=devicePixelRatio||1;W=c.offsetWidth;H=c.offsetHeight;c.width=W*dpr;c.height=H*dpr;X.setTransform(dpr,0,0,dpr,0,0)}
+resize();window.addEventListener('resize',resize);
+var FILLS=['#052e16','#14532d','#166534','#16a34a','#22c55e','#4ade80','#86efac'];
+var DIRS=[
+function(){return{x:-50,y:H*.08+Math.random()*H*.84,dx:1,dy:(Math.random()-.5)*.25}},
+function(){return{x:W+50,y:H*.08+Math.random()*H*.84,dx:-1,dy:(Math.random()-.5)*.25}},
+function(){return{x:W*.08+Math.random()*W*.84,y:-50,dx:(Math.random()-.5)*.25,dy:1}},
+function(){return{x:W*.08+Math.random()*W*.84,y:H+50,dx:(Math.random()-.5)*.25,dy:-1}},
+function(){return{x:-50,y:-50,dx:.65+Math.random()*.25,dy:.65+Math.random()*.25}},
+function(){return{x:W+50,y:-50,dx:-(0.65+Math.random()*.25),dy:.65+Math.random()*.25}},
+function(){return{x:-50,y:H+50,dx:.65+Math.random()*.25,dy:-(0.65+Math.random()*.25)}},
+function(){return{x:W+50,y:H+50,dx:-(0.65+Math.random()*.25),dy:-(0.65+Math.random()*.25)}}
+];
+function rR(x,y,w,h,r){X.beginPath();X.moveTo(x+r,y);X.lineTo(x+w-r,y);X.quadraticCurveTo(x+w,y,x+w,y+r);X.lineTo(x+w,y+h-r);X.quadraticCurveTo(x+w,y+h,x+w-r,y+h);X.lineTo(x+r,y+h);X.quadraticCurveTo(x,y+h,x,y+h-r);X.lineTo(x,y+r);X.quadraticCurveTo(x,y,x+r,y);X.closePath()}
+function dL(cx,cy,s,a){X.save();X.globalAlpha=a;X.strokeStyle='#eab308';X.fillStyle='#eab308';X.lineWidth=1.2*s;X.beginPath();X.arc(cx,cy-2.5*s,3*s,Math.PI,0,false);X.stroke();rR(cx-4*s,cy-1*s,8*s,7*s,1.2*s);X.fill();X.globalAlpha=a*.5;X.fillStyle='#92400e';X.beginPath();X.arc(cx,cy+1.5*s,1.2*s,0,6.283);X.fill();X.fillRect(cx-.5*s,cy+1.5*s,1*s,2.2*s);X.restore()}
+function P(){this.init()}
+P.prototype.init=function(){var d=DIRS[Math.floor(Math.random()*8)]();this.x=d.x;this.y=d.y;this.dx=d.dx;this.dy=d.dy;this.spd=.3+Math.random()*.45;this.w=14+Math.random()*14;this.h=this.w*(1.2+Math.random()*.3);this.cr=3+this.w*.12;this.fill=FILLS[Math.floor(Math.random()*FILLS.length)];this.op=.25+Math.random()*.4;this.trail=[];this.stamps=[];this.dist=0;this.nextS=90+Math.random()*130;this.stmp=false;this.stT=0};
+P.prototype.oob=function(){return this.x<-120||this.x>W+120||this.y<-120||this.y>H+120};
+P.prototype.update=function(){if(this.stmp){this.stT++;if(this.stT>22){this.stamps.push({x:this.x,y:this.y,age:0});this.stmp=false;this.nextS=90+Math.random()*130;this.dist=0}return}var mx=this.dx*this.spd,my=this.dy*this.spd;this.x+=mx;this.y+=my;this.dist+=Math.sqrt(mx*mx+my*my);this.trail.push({x:this.x,y:this.y,age:0});if(this.trail.length>700)this.trail.shift();for(var i=0;i<this.trail.length;i++)this.trail[i].age++;for(var i=0;i<this.stamps.length;i++)this.stamps[i].age++;if(this.dist>=this.nextS){this.stmp=true;this.stT=0}if(this.oob())this.init()};
+P.prototype.draw=function(){var o=this.op;if(this.trail.length>4){X.beginPath();X.moveTo(this.trail[0].x,this.trail[0].y);for(var i=2;i<this.trail.length;i+=2)X.lineTo(this.trail[i].x,this.trail[i].y);X.strokeStyle='rgba(234,179,8,'+(o*.6)+')';X.lineWidth=2.5;X.lineCap='round';X.stroke();var rc=this.trail.slice(-50);if(rc.length>2){X.beginPath();X.moveTo(rc[0].x,rc[0].y);for(var i=1;i<rc.length;i++)X.lineTo(rc[i].x,rc[i].y);X.strokeStyle='rgba(245,158,11,'+(Math.min(o*1.2,.55))+')';X.lineWidth=3.5;X.stroke()}X.lineCap='butt'}X.save();X.globalAlpha=o;rR(this.x-this.w/2,this.y-this.h/2,this.w,this.h,this.cr);X.fillStyle=this.fill;X.fill();X.globalAlpha=Math.min(o*1.5,.7);X.strokeStyle=this.fill;X.lineWidth=1;X.stroke();X.restore();var ls=this.w/28;dL(this.x,this.y,ls,Math.min(o*1.8,.8));for(var j=0;j<this.stamps.length;j++){var s=this.stamps[j],sa=Math.min(s.age/10,1),fo=Math.max(0,1-s.age/350);if(fo<.01)continue;var ao=o*sa*fo*2.5,cr2=9+Math.min(s.age*.08,5);X.beginPath();X.arc(s.x,s.y,cr2,0,6.283);X.fillStyle='rgba(22,163,74,'+Math.min(ao*.15,.1)+')';X.fill();X.strokeStyle='rgba(22,163,74,'+Math.min(ao,.65)+')';X.lineWidth=2;X.stroke();if(s.age>5){X.beginPath();X.moveTo(s.x-4,s.y+1);X.lineTo(s.x-1,s.y+4);X.lineTo(s.x+5,s.y-3);X.strokeStyle='rgba(22,163,74,'+Math.min(ao,.75)+')';X.lineWidth=2.2;X.lineCap='round';X.lineJoin='round';X.stroke();X.lineCap='butt';X.lineJoin='miter'}}if(this.stmp){var p=Math.sin(this.stT/22*Math.PI);X.beginPath();X.arc(this.x,this.y,20+p*5,0,6.283);X.fillStyle='rgba(234,179,8,'+(p*.12)+')';X.fill();X.strokeStyle='rgba(22,163,74,'+(p*.35)+')';X.lineWidth=1.8;X.stroke()}};
+var particles=[];for(var i=0;i<28;i++){var p=new P();p.x=Math.random()*W;p.y=Math.random()*H;p.dist=Math.random()*p.nextS;particles.push(p)}
+function loop(){X.clearRect(0,0,W,H);for(var i=0;i<particles.length;i++){particles[i].update();particles[i].draw()}requestAnimationFrame(loop)}loop()})();
+</script>
+</body>
+</html>
+
