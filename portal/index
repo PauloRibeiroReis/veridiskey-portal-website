@@ -1,1 +1,801 @@
 
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Veridiskey Portal — Demo Access</title>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='6' fill='%2316a34a'/><path d='M16 7a5 5 0 0 0-5 5v3h-1.5a1 1 0 0 0-1 1v8.5a1 1 0 0 0 1 1h13a1 1 0 0 0 1-1V16a1 1 0 0 0-1-1H21v-3a5 5 0 0 0-5-5zm-2.5 8v-3a2.5 2.5 0 1 1 5 0v3z' fill='white'/></svg>">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,300;1,9..40,400&family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500;1,600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+/* ── EXACT TOKEN MIRROR FROM VERIDISKEY.COM ── */
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --g9:#052e16;--g8:#14532d;--g7:#166534;--g6:#16a34a;--g5:#22c55e;
+  --g4:#4ade80;--g1:#dcfce7;--g0:#f0fdf4;--gb:rgba(22,163,74,.15);
+  --t:#1a2e22;--tb:#3d5347;--td:#6b8577;--tl:#94a89d;
+  --b:rgba(0,0,0,.06);
+  --sh:0 1px 3px rgba(0,0,0,.04),0 4px 16px rgba(0,0,0,.04);
+  --sl2:0 2px 6px rgba(0,0,0,.04),0 8px 32px rgba(0,0,0,.06)
+}
+html{scroll-behavior:smooth}
+body{font-family:'DM Sans',system-ui,sans-serif;font-size:15px;font-weight:400;background:#f8faf9;color:var(--tb);line-height:1.7;overflow-x:hidden}
+a{color:inherit;text-decoration:none}
+
+/* ── CANVAS BACKGROUND ── */
+#bgCanvas{position:fixed;top:0;left:0;width:100%;height:100%;z-index:0;pointer-events:none}
+
+/* ── SCREENS (SPA routing) ── */
+#root{width:100vw;height:100vh;overflow:hidden;position:relative}
+.screen{position:absolute;inset:0;overflow-y:auto;overflow-x:hidden;opacity:0;pointer-events:none;transition:opacity .22s ease}
+.screen.active{opacity:1;pointer-events:all}
+::-webkit-scrollbar{width:5px}::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:var(--g1);border-radius:3px}
+
+/* ── NAV — exact veridiskey.com pattern ── */
+.pnav{position:sticky;top:0;z-index:100;padding:.9rem 2.5rem;display:flex;align-items:center;justify-content:space-between;backdrop-filter:blur(14px);background:rgba(248,250,249,.88);border-bottom:1px solid var(--b)}
+.pnav-logo{display:flex;align-items:center;gap:.55rem;font-size:15px;font-weight:700;letter-spacing:.04em;color:var(--g8);text-decoration:none}
+.pnav-logo svg{width:26px;height:26px}
+.pnav-right{display:flex;align-items:center;gap:1.2rem}
+.pnav-back{font-size:13px;color:var(--td);cursor:pointer;background:none;border:none;font-family:'DM Sans',sans-serif;display:flex;align-items:center;gap:.4rem;transition:color .2s}
+.pnav-back:hover{color:var(--g6)}
+.pnav-badge{font-size:11px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;padding:.3rem .9rem;border-radius:20px;border:1px solid var(--gb);color:var(--g7);background:var(--g0)}
+.pnav-rk{font-size:11px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;padding:.3rem .9rem;border-radius:20px;border:1px solid rgba(22,163,74,.25);color:var(--g6);background:var(--g0);cursor:pointer;display:flex;align-items:center;gap:.4rem}
+.pnav-dot{width:6px;height:6px;border-radius:50%;background:var(--g5);animation:pulse-g 2s infinite}
+@keyframes pulse-g{0%,100%{opacity:1}50%{opacity:.3}}
+.pnav-primary{background:var(--g6);color:#fff;padding:.4rem 1.2rem;border-radius:6px;font-size:13px;font-weight:500;border:none;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all .22s}
+.pnav-primary:hover{background:var(--g7);transform:translateY(-1px)}
+
+/* ── PAGE WRAPPER ── */
+.page{position:relative;z-index:1;padding:2.5rem 2.5rem 5rem}
+.si{max-width:1040px;margin:0 auto;position:relative;z-index:2}
+
+/* ── SECTION LABELS — exact veridiskey.com .sl ── */
+.sl{font-family:'DM Sans',sans-serif;font-size:11px;font-weight:600;letter-spacing:.2em;text-transform:uppercase;color:var(--g6);margin-bottom:.7rem}
+
+/* ── HEADINGS — exact veridiskey.com .st ── */
+.st{font-family:'Playfair Display',Georgia,serif;font-size:clamp(24px,3.5vw,38px);font-weight:400;color:var(--g9);line-height:1.2;margin-bottom:.8rem}
+.st em{font-style:italic;color:var(--g6);font-weight:400}
+
+/* ── CARDS — exact veridiskey.com patterns ── */
+.card-w{background:rgba(255,255,255,.88);border:1px solid var(--b);border-radius:12px;padding:1.8rem;transition:all .3s}
+.card-w:hover{border-color:var(--gb);box-shadow:var(--sh)}
+.card-gb{background:rgba(255,255,255,.9);border:1px solid var(--gb);border-radius:14px;padding:2rem 2.5rem}
+.card-accent{background:rgba(255,255,255,.88);border:1px solid var(--gb);border-radius:14px;padding:2rem;position:relative;overflow:hidden}
+.card-accent::before{content:'';position:absolute;top:0;left:0;width:4px;height:100%;background:linear-gradient(180deg,var(--g5),var(--g6))}
+
+/* ── METRIC CARDS ── */
+.metric-g{display:grid;gap:1rem}
+.mc{background:rgba(255,255,255,.88);border:1px solid var(--b);border-radius:12px;padding:1.6rem 1.8rem;transition:all .3s}
+.mc:hover{border-color:var(--gb);box-shadow:var(--sh)}
+.mc-label{font-size:11px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--tl);margin-bottom:.4rem}
+.mc-val{font-family:'Playfair Display',serif;font-size:36px;font-weight:400;color:var(--g9);line-height:1}
+.mc-sub{font-size:12px;color:var(--td);margin-top:.3rem}
+
+/* ── BADGES ── */
+.badge{display:inline-flex;align-items:center;gap:.3rem;font-size:11px;font-weight:600;letter-spacing:.04em;padding:.25rem .8rem;border-radius:20px}
+.badge::before{content:'';width:5px;height:5px;border-radius:50%;flex-shrink:0}
+.b-valid{background:var(--g0);color:var(--g7);border:1px solid var(--gb)}.b-valid::before{background:var(--g5)}
+.b-expiring{background:#fffbeb;color:#b45309;border:1px solid #fde68a}.b-expiring::before{background:#f59e0b}
+.b-expired{background:#fef2f2;color:#b91c1c;border:1px solid #fecaca}.b-expired::before{background:#ef4444}
+.b-rk{background:var(--g0);color:var(--g8);border:1px solid var(--gb)}.b-rk::before{background:var(--g6)}
+
+/* ── RISK ── */
+.risk{font-size:11px;font-weight:600;letter-spacing:.04em}
+.r-low{color:var(--g6)}.r-med{color:#b45309}.r-high{color:#b91c1c}
+
+/* ── TABLE ── */
+.tbl{background:rgba(255,255,255,.9);border:1px solid var(--b);border-radius:12px;overflow:hidden;box-shadow:var(--sh)}
+.tbl-head{display:grid;padding:.75rem 1.8rem;background:var(--g0);border-bottom:1px solid var(--gb)}
+.tbl-head span{font-size:11px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--tl)}
+.tbl-row{display:grid;padding:1.1rem 1.8rem;border-bottom:1px solid rgba(0,0,0,.04);cursor:pointer;transition:background .12s;align-items:center}
+.tbl-row:last-child{border-bottom:none}
+.tbl-row:hover{background:rgba(240,253,244,.6)}
+
+/* ── HITL ALERT (matches .hb2 from site) ── */
+.hitl{background:linear-gradient(135deg,var(--g8),var(--g9));border-radius:14px;padding:2rem 2.5rem;margin-bottom:2rem;position:relative;overflow:hidden;display:flex;justify-content:space-between;align-items:center;gap:1.5rem}
+.hitl::after{content:'';position:absolute;top:-40%;right:-8%;width:260px;height:260px;border-radius:50%;background:rgba(34,197,94,.07)}
+.hitl-tag{font-size:10px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--g4);margin-bottom:.4rem}
+.hitl-title{font-family:'Playfair Display',serif;font-size:18px;font-weight:400;color:#fff;margin-bottom:.3rem}
+.hitl-sub{font-size:13px;color:rgba(255,255,255,.65)}
+.hitl-ok{background:rgba(240,253,244,.95);border:1px solid var(--gb);border-radius:12px;padding:1rem 1.5rem;margin-bottom:1.5rem;display:flex;align-items:center;gap:.7rem;animation:fadeUp .4s ease}
+.hitl-ok span{font-size:14px;color:var(--g7);font-weight:500}
+.btn-validate{background:var(--g6);color:#fff;border:none;padding:.6rem 1.4rem;border-radius:7px;font-size:13px;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all .22s}
+.btn-validate:hover{background:var(--g7)}
+.btn-dismiss{background:rgba(255,255,255,.12);color:rgba(255,255,255,.75);border:none;padding:.6rem 1.2rem;border-radius:7px;font-size:13px;cursor:pointer;font-family:'DM Sans',sans-serif;transition:background .2s}
+.btn-dismiss:hover{background:rgba(255,255,255,.2)}
+
+/* ── BUTTONS ── */
+.btn-g{background:var(--g6);color:#fff;border:none;padding:.6rem 1.6rem;border-radius:8px;font-size:14px;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all .22s;display:inline-flex;align-items:center;gap:.5rem}
+.btn-g:hover{background:var(--g7);transform:translateY(-1px)}
+.btn-g:active{transform:scale(.98)}
+.btn-ghost{background:transparent;color:var(--g7);border:1px solid var(--gb);padding:.5rem 1.4rem;border-radius:8px;font-size:13px;font-weight:500;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all .22s}
+.btn-ghost:hover{background:var(--g0);border-color:var(--g6)}
+.btn-outline{background:transparent;color:var(--td);border:1px solid var(--b);padding:.5rem 1.2rem;border-radius:8px;font-size:13px;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all .22s}
+.btn-outline:hover{border-color:var(--gb);color:var(--g7)}
+.btn-rk-verify{background:var(--g0);color:var(--g8);border:1px solid var(--gb);padding:.6rem;border-radius:8px;font-size:12px;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all .22s;width:100%;text-align:center}
+.btn-rk-verify:hover{background:var(--g1);border-color:var(--g6)}
+.btn-rk-verify:disabled{opacity:.6;cursor:wait}
+
+/* ── CREDENTIAL CARD (matches .pa from site) ── */
+.cred-card{background:rgba(255,255,255,.9);border:1px solid var(--gb);border-radius:14px;padding:2rem 2rem 2rem 2.2rem;position:relative;overflow:hidden;display:flex;gap:1.5rem;margin-bottom:1.2rem;animation:fadeUp .3s ease}
+.cred-card::before{content:'';position:absolute;top:0;left:0;width:4px;height:100%;background:linear-gradient(180deg,var(--g5),var(--g6))}
+.cred-left{flex:1;min-width:0}
+.cred-right{width:180px;flex-shrink:0}
+.rk-panel{background:var(--g0);border:1px solid var(--gb);border-radius:10px;padding:1.2rem}
+.rk-panel-title{font-size:10px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--g6);margin-bottom:.9rem;display:flex;align-items:center;gap:.4rem}
+.rk-fl{font-size:10px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--tl);margin-bottom:.2rem}
+.rk-fv{font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--g8);font-weight:500;margin-bottom:.9rem;word-break:break-all}
+.rk-fv-sm{font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--td);word-break:break-all;margin-bottom:.9rem}
+.did-bar{display:flex;align-items:center;gap:.5rem;padding:.5rem .8rem;background:var(--g0);border-radius:6px;margin-top:.9rem}
+.did-bar span{font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--td);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.cred-meta{display:flex;gap:1.8rem;flex-wrap:wrap;margin:.9rem 0}
+.cf-label{font-size:10px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--tl);margin-bottom:.25rem}
+.cf-val{font-size:14px;font-weight:500;color:var(--t)}
+
+/* ── AUDIT EVENT DOT ── */
+.ev-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+
+/* ── FORM ── */
+.fg{margin-bottom:1rem}
+.fg label{display:block;font-size:11px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--td);margin-bottom:.35rem}
+.fg input,.fg select,.fg textarea{width:100%;background:#fff;border:1px solid var(--b);border-radius:8px;padding:.65rem 1rem;font-family:'DM Sans',sans-serif;font-size:14px;color:var(--t);outline:none;transition:border-color .22s,box-shadow .22s}
+.fg input:focus,.fg select:focus,.fg textarea:focus{border-color:var(--g5);box-shadow:0 0 0 3px rgba(22,163,74,.08)}
+.fg textarea{resize:vertical;min-height:90px;line-height:1.6}
+.fg select{cursor:pointer}
+
+/* ── ANIMATIONS ── */
+@keyframes fu{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:translateY(0)}}
+@keyframes fadeUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+@keyframes spin{to{transform:rotate(360deg)}}
+.fi{opacity:0;transform:translateY(22px);transition:opacity .55s ease,transform .55s ease}
+.fi.v{opacity:1;transform:translateY(0)}
+.spin{display:inline-block;animation:spin .7s linear infinite}
+
+/* ── PILOT CTA box (matches .pilot-cta from site) ── */
+.pilot-box{background:linear-gradient(135deg,var(--g0),#fff);border:2px solid var(--g5);border-radius:14px;padding:2rem 2.5rem;text-align:center;margin-top:1.5rem}
+.pilot-box h4{font-family:'Playfair Display',serif;font-size:20px;font-weight:400;color:var(--g9);margin-bottom:.4rem}
+.pilot-box h4 em{font-style:italic;color:var(--g6)}
+.pilot-box p{font-size:14px;color:var(--td);margin-bottom:1rem;line-height:1.7}
+
+/* ── LOGIN SPECIFIC ── */
+#s-login{background:#f8faf9}
+.login-wrap{display:flex;min-height:100vh}
+.login-left{width:440px;flex-shrink:0;background:linear-gradient(165deg,var(--g8) 0%,var(--g9) 100%);display:flex;flex-direction:column;justify-content:space-between;padding:3.5rem;position:relative;overflow:hidden}
+.login-left::before{content:'';position:absolute;top:-30%;right:-15%;width:300px;height:300px;border-radius:50%;background:rgba(34,197,94,.07)}
+.login-left::after{content:'';position:absolute;bottom:-15%;left:-10%;width:200px;height:200px;border-radius:50%;background:rgba(74,222,128,.05)}
+.login-right{flex:1;display:flex;align-items:center;justify-content:center;padding:3.5rem;background:rgba(255,255,255,.7);backdrop-filter:blur(12px)}
+.ll-ver{display:flex;align-items:center;gap:.6rem;margin-bottom:3rem}
+.ll-ver-dot{width:7px;height:7px;border-radius:50%;background:var(--g4);animation:pulse-g 2s infinite}
+.ll-ver span{font-size:10px;font-weight:600;letter-spacing:.18em;text-transform:uppercase;color:rgba(255,255,255,.4)}
+.ll-name{font-size:clamp(44px,7vw,72px);font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:#fff;line-height:.9;margin-bottom:.5rem;position:relative;z-index:1;animation:fu .7s ease both}
+.ll-tag{font-family:'Playfair Display',serif;font-size:16px;font-weight:400;font-style:italic;color:rgba(255,255,255,.5);margin-bottom:3rem;position:relative;z-index:1;animation:fu .7s .1s ease both}
+.ll-feats{display:flex;flex-direction:column;gap:.9rem;position:relative;z-index:1;animation:fu .7s .2s ease both}
+.ll-feat{display:flex;align-items:center;gap:.7rem}
+.ll-feat::before{content:'';width:4px;height:4px;border-radius:50%;background:var(--g4);flex-shrink:0}
+.ll-feat span{font-size:13px;color:rgba(255,255,255,.5);font-weight:300}
+.ll-bottom{position:relative;z-index:1;padding:1rem 1.2rem;border:1px solid rgba(255,255,255,.08);border-radius:8px;animation:fu .7s .3s ease both}
+.ll-bottom p{font-family:'JetBrains Mono',monospace;font-size:9px;color:rgba(255,255,255,.25);letter-spacing:.5px}
+.lf{width:100%;max-width:380px}
+.lf-kicker{font-size:11px;font-weight:600;letter-spacing:.18em;text-transform:uppercase;color:var(--g6);margin-bottom:.9rem}
+.lf-h{font-family:'Playfair Display',serif;font-size:clamp(26px,4vw,40px);font-weight:400;color:var(--g9);line-height:1;margin-bottom:2.2rem}
+.lf-h em{font-style:italic;color:var(--g6)}
+.role-label{font-size:11px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--tl);margin-bottom:.8rem}
+.role-grid{display:grid;grid-template-columns:1fr 1fr;gap:.75rem;margin-bottom:1.5rem}
+.role-btn{background:rgba(255,255,255,.85);border:1.5px solid var(--b);border-radius:10px;padding:1rem .9rem;cursor:pointer;text-align:left;transition:all .2s;font-family:'DM Sans',sans-serif}
+.role-btn:hover{border-color:var(--gb);background:var(--g0)}
+.role-btn.sel{border-color:var(--g6);background:var(--g0)}
+.rb-icon{font-size:17px;margin-bottom:.5rem}
+.rb-title{font-size:12px;font-weight:600;color:var(--g9);display:block;margin-bottom:.15rem}
+.rb-sub{font-size:11px;color:var(--td);display:block;font-weight:300}
+.login-note{margin-top:1rem;padding:.8rem 1rem;background:var(--g0);border-radius:7px;border:1px solid var(--gb)}
+.login-note p{font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--tl);letter-spacing:.3px}
+
+/* ── DARK TECH PANEL (for ROOTKey) ── */
+.tech-dark{background:linear-gradient(135deg,var(--g8),var(--g9));border-radius:14px;padding:2rem 2.5rem;position:relative;overflow:hidden}
+.tech-dark::after{content:'';position:absolute;top:-30%;right:-8%;width:220px;height:220px;border-radius:50%;background:rgba(34,197,94,.07)}
+.tech-dark .sl{color:var(--g4)}
+.tech-dark h3{font-family:'Playfair Display',serif;font-size:clamp(20px,2.5vw,28px);font-weight:400;color:#fff;margin-bottom:.5rem}
+.tech-dark h3 em{font-style:italic;color:var(--g4)}
+.tech-dark p{font-size:15px;color:rgba(255,255,255,.6);line-height:1.75;font-weight:300}
+.rk-stat{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.08);border-radius:8px;padding:1rem 1.2rem}
+.rk-stat-l{font-size:9px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,.3);margin-bottom:.3rem}
+.rk-stat-v{font-family:'JetBrains Mono',monospace;font-size:13px;color:rgba(255,255,255,.7)}
+.rk-cert-row{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.07);border-radius:8px;padding:.9rem 1rem;display:flex;justify-content:space-between;align-items:center;margin-bottom:.6rem}
+.rk-cert-name{font-family:'Playfair Display',serif;font-size:14px;color:rgba(255,255,255,.8);margin-bottom:.2rem;font-weight:400}
+.rk-cert-sub{font-size:11px;color:rgba(255,255,255,.3)}
+.rk-cert-id{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--g4);font-weight:500;text-align:right;margin-bottom:.2rem}
+.rk-cert-hash{font-family:'JetBrains Mono',monospace;font-size:8px;color:rgba(255,255,255,.2)}
+
+/* ── TRANSPARENCY ── */
+.trans-row{display:grid;padding:1rem 1.8rem;border-bottom:1px solid rgba(0,0,0,.04);align-items:center}
+.trans-row:last-child{border-bottom:none}
+
+/* ── RESPONSIVE ── */
+@media(max-width:768px){
+  .login-left{display:none}
+  .login-right{padding:2rem}
+  .page{padding:1.5rem 1rem 4rem}
+  .pnav{padding:.75rem 1.2rem}
+}
+</style>
+</head>
+<body>
+<canvas id="bgCanvas"></canvas>
+<div id="root">
+
+<!-- ═══ LOGIN ═══ -->
+<div id="s-login" class="screen">
+  <div class="login-wrap">
+    <div class="login-left">
+      <div>
+        <div class="ll-ver"><div class="ll-ver-dot"></div><span>Veridiskey Portal · Demo</span></div>
+        <div class="ll-name">Veridis<br/>key</div>
+        <div class="ll-tag">Trusted Infrastructure for Digital Cities</div>
+        <div class="ll-feats">
+          <div class="ll-feat"><span>Verified Credentials. Transparent Procurement.</span></div>
+          <div class="ll-feat"><span>EBSI Verifiable Credentials · W3C VC 2.0</span></div>
+          <div class="ll-feat"><span>ROOTKey immutable data certification</span></div>
+          <div class="ll-feat"><span>SHA-256 tamper-proof audit trail</span></div>
+          <div class="ll-feat"><span>eIDAS 2.0 · Procurement Act 2023 compliant</span></div>
+        </div>
+      </div>
+      <div class="ll-bottom">
+        <p>Strategic. Immutable. Human-Centred.</p>
+      </div>
+    </div>
+    <div class="login-right">
+      <div class="lf">
+        <div class="lf-kicker">Demo Access</div>
+        <h2 class="lf-h">Sign in to<br/><em>Portal</em></h2>
+        <div class="role-label">Select your role</div>
+        <div class="role-grid" id="role-grid">
+          <button class="role-btn sel" data-role="officer" onclick="selectRole('officer',this)">
+            <div class="rb-icon">🏛️</div>
+            <span class="rb-title">Procurement Officer</span>
+            <span class="rb-sub">Contract management · HITL</span>
+          </button>
+          <button class="role-btn" data-role="contractor" onclick="selectRole('contractor',this)">
+            <div class="rb-icon">🔧</div>
+            <span class="rb-title">Contractor</span>
+            <span class="rb-sub">Credential wallet</span>
+          </button>
+          <button class="role-btn" data-role="issuer" onclick="selectRole('issuer',this)">
+            <div class="rb-icon">📋</div>
+            <span class="rb-title">Credential Issuer</span>
+            <span class="rb-sub">ANAC · InCI · Insurers</span>
+          </button>
+          <button class="role-btn" data-role="public" onclick="selectRole('public',this)">
+            <div class="rb-icon">👁️</div>
+            <span class="rb-title">Public / Auditor</span>
+            <span class="rb-sub">Transparency dashboard</span>
+          </button>
+        </div>
+        <button class="btn-g" style="width:100%;justify-content:center;padding:.8rem;font-size:15px" onclick="doLogin()">Enter Demo Portal</button>
+        <div class="login-note">
+          <p>Demo mode · No real data transmitted · ROOTKey simulated · EBSI pre-production environment</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ OFFICER DASHBOARD ═══ -->
+<div id="s-dashboard" class="screen">
+  <nav class="pnav">
+    <a href="/" class="pnav-logo">
+      <svg viewBox="0 0 32 32" fill="none"><rect width="32" height="32" rx="6" fill="#16a34a"/><path d="M16 7a5 5 0 0 0-5 5v3h-1.5a1 1 0 0 0-1 1v8.5a1 1 0 0 0 1 1h13a1 1 0 0 0 1-1V16a1 1 0 0 0-1-1H21v-3a5 5 0 0 0-5-5zm-2.5 8v-3a2.5 2.5 0 1 1 5 0v3z" fill="white"/></svg>
+      VERIDISKEY
+    </a>
+    <div class="pnav-right">
+      <button class="pnav-rk" onclick="go('rootkey')"><span class="pnav-dot"></span>ROOTKey Live</button>
+      <button class="pnav-primary" onclick="go('audit')">Audit Trail</button>
+      <button class="pnav-back" onclick="doLogout()">Sign out</button>
+    </div>
+  </nav>
+  <div class="page"><div class="si" id="dash-page"></div></div>
+</div>
+
+<!-- ═══ CONTRACTOR DETAIL ═══ -->
+<div id="s-contractor" class="screen">
+  <nav class="pnav">
+    <button class="pnav-back" onclick="go('dashboard')">← Back to Portfolio</button>
+    <a href="/" class="pnav-logo" style="margin-left:1rem">
+      <svg viewBox="0 0 32 32" fill="none"><rect width="32" height="32" rx="6" fill="#16a34a"/><path d="M16 7a5 5 0 0 0-5 5v3h-1.5a1 1 0 0 0-1 1v8.5a1 1 0 0 0 1 1h13a1 1 0 0 0 1-1V16a1 1 0 0 0-1-1H21v-3a5 5 0 0 0-5-5zm-2.5 8v-3a2.5 2.5 0 1 1 5 0v3z" fill="white"/></svg>
+      VERIDISKEY
+    </a>
+    <div class="pnav-right">
+      <button class="pnav-rk" onclick="go('rootkey')"><span class="pnav-dot"></span>ROOTKey Live</button>
+    </div>
+  </nav>
+  <div class="page"><div class="si" id="contractor-page"></div></div>
+</div>
+
+<!-- ═══ AUDIT ═══ -->
+<div id="s-audit" class="screen">
+  <nav class="pnav">
+    <button class="pnav-back" onclick="go('dashboard')">← Back</button>
+    <a href="/" class="pnav-logo" style="margin-left:1rem">
+      <svg viewBox="0 0 32 32" fill="none"><rect width="32" height="32" rx="6" fill="#16a34a"/><path d="M16 7a5 5 0 0 0-5 5v3h-1.5a1 1 0 0 0-1 1v8.5a1 1 0 0 0 1 1h13a1 1 0 0 0 1-1V16a1 1 0 0 0-1-1H21v-3a5 5 0 0 0-5-5zm-2.5 8v-3a2.5 2.5 0 1 1 5 0v3z" fill="white"/></svg>
+      VERIDISKEY
+    </a>
+    <div class="pnav-right"><span class="pnav-badge">Immutable Audit Trail</span></div>
+  </nav>
+  <div class="page"><div class="si" id="audit-page"></div></div>
+</div>
+
+<!-- ═══ ROOTKEY ═══ -->
+<div id="s-rootkey" class="screen">
+  <nav class="pnav">
+    <button class="pnav-back" onclick="goBack()">← Back</button>
+    <a href="/" class="pnav-logo" style="margin-left:1rem">
+      <svg viewBox="0 0 32 32" fill="none"><rect width="32" height="32" rx="6" fill="#16a34a"/><path d="M16 7a5 5 0 0 0-5 5v3h-1.5a1 1 0 0 0-1 1v8.5a1 1 0 0 0 1 1h13a1 1 0 0 0 1-1V16a1 1 0 0 0-1-1H21v-3a5 5 0 0 0-5-5zm-2.5 8v-3a2.5 2.5 0 1 1 5 0v3z" fill="white"/></svg>
+      VERIDISKEY
+    </a>
+    <div class="pnav-right"><span class="pnav-badge">ROOTKey Integration</span></div>
+  </nav>
+  <div class="page"><div class="si" id="rootkey-page"></div></div>
+</div>
+
+<!-- ═══ WALLET ═══ -->
+<div id="s-wallet" class="screen">
+  <nav class="pnav">
+    <a href="/" class="pnav-logo">
+      <svg viewBox="0 0 32 32" fill="none"><rect width="32" height="32" rx="6" fill="#16a34a"/><path d="M16 7a5 5 0 0 0-5 5v3h-1.5a1 1 0 0 0-1 1v8.5a1 1 0 0 0 1 1h13a1 1 0 0 0 1-1V16a1 1 0 0 0-1-1H21v-3a5 5 0 0 0-5-5zm-2.5 8v-3a2.5 2.5 0 1 1 5 0v3z" fill="white"/></svg>
+      VERIDISKEY
+    </a>
+    <div class="pnav-right">
+      <span class="pnav-badge">Contractor Wallet</span>
+      <button class="pnav-back" onclick="doLogout()">Sign out</button>
+    </div>
+  </nav>
+  <div class="page"><div class="si" id="wallet-page"></div></div>
+</div>
+
+<!-- ═══ ISSUER ═══ -->
+<div id="s-issuer" class="screen">
+  <nav class="pnav">
+    <a href="/" class="pnav-logo">
+      <svg viewBox="0 0 32 32" fill="none"><rect width="32" height="32" rx="6" fill="#16a34a"/><path d="M16 7a5 5 0 0 0-5 5v3h-1.5a1 1 0 0 0-1 1v8.5a1 1 0 0 0 1 1h13a1 1 0 0 0 1-1V16a1 1 0 0 0-1-1H21v-3a5 5 0 0 0-5-5zm-2.5 8v-3a2.5 2.5 0 1 1 5 0v3z" fill="white"/></svg>
+      VERIDISKEY
+    </a>
+    <div class="pnav-right">
+      <span class="pnav-badge">Credential Issuer</span>
+      <button class="pnav-back" onclick="doLogout()">Sign out</button>
+    </div>
+  </nav>
+  <div class="page"><div class="si" id="issuer-page"></div></div>
+</div>
+
+<!-- ═══ TRANSPARENCY ═══ -->
+<div id="s-transparency" class="screen">
+  <nav class="pnav">
+    <a href="/" class="pnav-logo">
+      <svg viewBox="0 0 32 32" fill="none"><rect width="32" height="32" rx="6" fill="#16a34a"/><path d="M16 7a5 5 0 0 0-5 5v3h-1.5a1 1 0 0 0-1 1v8.5a1 1 0 0 0 1 1h13a1 1 0 0 0 1-1V16a1 1 0 0 0-1-1H21v-3a5 5 0 0 0-5-5zm-2.5 8v-3a2.5 2.5 0 1 1 5 0v3z" fill="white"/></svg>
+      VERIDISKEY
+    </a>
+    <div class="pnav-right">
+      <span class="pnav-badge">Public Procurement Ledger</span>
+      <button class="pnav-back" onclick="doLogout()">Sign out</button>
+    </div>
+  </nav>
+  <div class="page"><div class="si" id="transparency-page"></div></div>
+</div>
+
+</div><!-- #root -->
+
+<script>
+/* ══════════════════════════════════════════
+   CANVAS ANIMATION — exact from veridiskey.com
+══════════════════════════════════════════ */
+(function(){
+var c=document.getElementById('bgCanvas'),X=c.getContext('2d'),W,H,dpr;
+function resize(){dpr=devicePixelRatio||1;W=c.offsetWidth;H=c.offsetHeight;c.width=W*dpr;c.height=H*dpr;X.setTransform(dpr,0,0,dpr,0,0)}
+resize();window.addEventListener('resize',resize);
+var FILLS=['#052e16','#14532d','#166534','#16a34a','#22c55e','#4ade80','#86efac'];
+var DIRS=[
+function(){return{x:-50,y:H*.08+Math.random()*H*.84,dx:1,dy:(Math.random()-.5)*.25}},
+function(){return{x:W+50,y:H*.08+Math.random()*H*.84,dx:-1,dy:(Math.random()-.5)*.25}},
+function(){return{x:W*.08+Math.random()*W*.84,y:-50,dx:(Math.random()-.5)*.25,dy:1}},
+function(){return{x:W*.08+Math.random()*W*.84,y:H+50,dx:(Math.random()-.5)*.25,dy:-1}},
+function(){return{x:-50,y:-50,dx:.65+Math.random()*.25,dy:.65+Math.random()*.25}},
+function(){return{x:W+50,y:-50,dx:-(0.65+Math.random()*.25),dy:.65+Math.random()*.25}},
+function(){return{x:-50,y:H+50,dx:.65+Math.random()*.25,dy:-(0.65+Math.random()*.25)}},
+function(){return{x:W+50,y:H+50,dx:-(0.65+Math.random()*.25),dy:-(0.65+Math.random()*.25)}}
+];
+function rR(x,y,w,h,r){X.beginPath();X.moveTo(x+r,y);X.lineTo(x+w-r,y);X.quadraticCurveTo(x+w,y,x+w,y+r);X.lineTo(x+w,y+h-r);X.quadraticCurveTo(x+w,y+h,x+w-r,y+h);X.lineTo(x+r,y+h);X.quadraticCurveTo(x,y+h,x,y+h-r);X.lineTo(x,y+r);X.quadraticCurveTo(x,y,x+r,y);X.closePath()}
+function dL(cx,cy,s,a){X.save();X.globalAlpha=a;X.strokeStyle='#eab308';X.fillStyle='#eab308';X.lineWidth=1.2*s;X.beginPath();X.arc(cx,cy-2.5*s,3*s,Math.PI,0,false);X.stroke();rR(cx-4*s,cy-1*s,8*s,7*s,1.2*s);X.fill();X.globalAlpha=a*.5;X.fillStyle='#92400e';X.beginPath();X.arc(cx,cy+1.5*s,1.2*s,0,6.283);X.fill();X.fillRect(cx-.5*s,cy+1.5*s,1*s,2.2*s);X.restore()}
+function P(){this.init()}
+P.prototype.init=function(){var d=DIRS[Math.floor(Math.random()*8)]();this.x=d.x;this.y=d.y;this.dx=d.dx;this.dy=d.dy;this.spd=.3+Math.random()*.45;this.w=14+Math.random()*14;this.h=this.w*(1.2+Math.random()*.3);this.cr=3+this.w*.12;this.fill=FILLS[Math.floor(Math.random()*FILLS.length)];this.op=.25+Math.random()*.4;this.trail=[];this.stamps=[];this.dist=0;this.nextS=90+Math.random()*130;this.stmp=false;this.stT=0};
+P.prototype.oob=function(){return this.x<-120||this.x>W+120||this.y<-120||this.y>H+120};
+P.prototype.update=function(){if(this.stmp){this.stT++;if(this.stT>22){this.stamps.push({x:this.x,y:this.y,age:0});this.stmp=false;this.nextS=90+Math.random()*130;this.dist=0}return}var mx=this.dx*this.spd,my=this.dy*this.spd;this.x+=mx;this.y+=my;this.dist+=Math.sqrt(mx*mx+my*my);this.trail.push({x:this.x,y:this.y,age:0});if(this.trail.length>700)this.trail.shift();for(var i=0;i<this.trail.length;i++)this.trail[i].age++;for(var i=0;i<this.stamps.length;i++)this.stamps[i].age++;if(this.dist>=this.nextS){this.stmp=true;this.stT=0}if(this.oob())this.init()};
+P.prototype.draw=function(){var o=this.op;if(this.trail.length>4){X.beginPath();X.moveTo(this.trail[0].x,this.trail[0].y);for(var i=2;i<this.trail.length;i+=2)X.lineTo(this.trail[i].x,this.trail[i].y);X.strokeStyle='rgba(234,179,8,'+(o*.6)+')';X.lineWidth=2.5;X.lineCap='round';X.stroke();var rc=this.trail.slice(-50);if(rc.length>2){X.beginPath();X.moveTo(rc[0].x,rc[0].y);for(var i=1;i<rc.length;i++)X.lineTo(rc[i].x,rc[i].y);X.strokeStyle='rgba(245,158,11,'+(Math.min(o*1.2,.55))+')';X.lineWidth=3.5;X.stroke()}X.lineCap='butt'}X.save();X.globalAlpha=o;rR(this.x-this.w/2,this.y-this.h/2,this.w,this.h,this.cr);X.fillStyle=this.fill;X.fill();X.globalAlpha=Math.min(o*1.5,.7);X.strokeStyle=this.fill;X.lineWidth=1;X.stroke();X.restore();var ls=this.w/28;dL(this.x,this.y,ls,Math.min(o*1.8,.8));for(var j=0;j<this.stamps.length;j++){var s=this.stamps[j],sa=Math.min(s.age/10,1),fo=Math.max(0,1-s.age/350);if(fo<.01)continue;var ao=o*sa*fo*2.5,cr2=9+Math.min(s.age*.08,5);X.beginPath();X.arc(s.x,s.y,cr2,0,6.283);X.fillStyle='rgba(22,163,74,'+Math.min(ao*.15,.1)+')';X.fill();X.strokeStyle='rgba(22,163,74,'+Math.min(ao,.65)+')';X.lineWidth=2;X.stroke();if(s.age>5){X.beginPath();X.moveTo(s.x-4,s.y+1);X.lineTo(s.x-1,s.y+4);X.lineTo(s.x+5,s.y-3);X.strokeStyle='rgba(22,163,74,'+Math.min(ao,.75)+')';X.lineWidth=2.2;X.lineCap='round';X.lineJoin='round';X.stroke();X.lineCap='butt';X.lineJoin='miter'}}if(this.stmp){var p=Math.sin(this.stT/22*Math.PI);X.beginPath();X.arc(this.x,this.y,20+p*5,0,6.283);X.fillStyle='rgba(234,179,8,'+(p*.12)+')';X.fill();X.strokeStyle='rgba(22,163,74,'+(p*.35)+')';X.lineWidth=1.8;X.stroke()}};
+var particles=[];for(var i=0;i<28;i++){var p=new P();p.x=Math.random()*W;p.y=Math.random()*H;p.dist=Math.random()*p.nextS;particles.push(p)}
+function loop(){X.clearRect(0,0,W,H);for(var i=0;i<particles.length;i++){particles[i].update();particles[i].draw()}requestAnimationFrame(loop)}loop()
+})();
+
+/* ══════════════════════════════════════════
+   SCROLL REVEAL — matches .fi/.fi.v from site
+══════════════════════════════════════════ */
+var ob=new IntersectionObserver(function(e){e.forEach(function(x){if(x.isIntersecting){x.target.classList.add('v');ob.unobserve(x.target)}})},{threshold:.1});
+function revealFi(parent){parent.querySelectorAll('.fi').forEach(function(el){ob.observe(el)})}
+
+/* ══════════════════════════════════════════
+   DATA
+══════════════════════════════════════════ */
+var CTRS=[
+  {id:'CON-001',name:'Construções Silva & Filhos, Lda',nif:'507 891 234',verified:true,risk:'low',since:'2024-03-15',
+   creds:[
+    {id:'VC-2024-001',type:'Alvará de Construção',cat:'Licensing',issuer:'InCI Portugal',issued:'2024-03-15',expires:'2026-12-31',status:'valid',did:'did:ebsi:z22ZHsQmNdbGFXkDEz5mfQ9',cert:'RK-A4B8C2D1',hash:'sha256:a4b8c2d1e9f07823456789abcdef012345678901'},
+    {id:'VC-2025-089',type:'Seguro Responsabilidade Civil',cat:'Insurance',issuer:'Fidelidade Seguros',issued:'2025-07-01',expires:'2026-06-30',status:'expiring',did:'did:ebsi:z33AiTmOQaLhGXvEz7nkgR1',cert:'RK-F7C3A9B2',hash:'sha256:f7c3a9b2e1d47890abcdef012345678901abcde'},
+    {id:'VC-2024-233',type:'Certificado ISO 9001',cat:'Quality',issuer:'SGS Portugal',issued:'2024-11-20',expires:'2027-11-20',status:'valid',did:'did:ebsi:z44BjUoPRbMiHYwFz9olhS3',cert:'RK-B2E7F1C9',hash:'sha256:b2e7f1c9d3a56789abcdef012345678901abcde'},
+   ]},
+  {id:'CON-002',name:'EléctroTejo, S.A.',nif:'509 234 567',verified:true,risk:'medium',since:'2023-09-01',
+   creds:[
+    {id:'VC-2023-156',type:'Licença DGEG',cat:'Regulatory',issuer:'DGEG Portugal',issued:'2023-09-01',expires:'2026-04-30',status:'expiring',did:'did:ebsi:z55CkVqPScNjIZxGz1pmjT5',cert:'RK-D9A1F7B3',hash:'sha256:d9a1f7b3c2e87890abcdef012345678901abcde'},
+    {id:'VC-2025-312',type:'Cert. Energia Solar',cat:'Certification',issuer:'ADENE',issued:'2025-01-15',expires:'2028-01-15',status:'valid',did:'did:ebsi:z66DlWrQTdOkJAxHz2qnkU7',cert:'RK-C4E9B1F2',hash:'sha256:c4e9b1f2a7d67890abcdef012345678901abcde'},
+   ]},
+  {id:'CON-003',name:'Infraestruturas Verde, Lda',nif:'510 678 901',verified:false,risk:'high',since:'2025-01-10',
+   creds:[
+    {id:'VC-2023-089',type:'Alvará de Construção',cat:'Licensing',issuer:'InCI Portugal',issued:'2023-06-01',expires:'2025-12-31',status:'expired',did:'did:ebsi:z77EmXsSUePoKByIz3rnlV9',cert:'RK-E7D3C1B9',hash:'sha256:e7d3c1b9f4a27890abcdef012345678901abcde'},
+   ]},
+  {id:'CON-004',name:'Fundações & Geotecnia, S.A.',nif:'508 456 789',verified:true,risk:'low',since:'2024-06-20',
+   creds:[
+    {id:'VC-2024-567',type:'Especialização Geotecnia',cat:'Qualification',issuer:'InCI Portugal',issued:'2024-06-20',expires:'2027-08-15',status:'valid',did:'did:ebsi:z88FnYtTVfQpLCzJz4soMW1',cert:'RK-F1B4E8C2',hash:'sha256:f1b4e8c2a9d77890abcdef012345678901abcde'},
+    {id:'VC-2025-891',type:'Seguro Responsabilidade Civil',cat:'Insurance',issuer:'Ageas Seguros',issued:'2025-12-01',expires:'2026-11-30',status:'valid',did:'did:ebsi:z99GoZuUWgRqMDaKz5tpNX3',cert:'RK-A7C9F3E1',hash:'sha256:a7c9f3e1b2d87890abcdef012345678901abcde'},
+   ]},
+];
+
+var EVENTS=[
+  {ts:'2026-04-19T10:23:11Z',type:'verify',label:'Credential verified automatically',contractor:'Construções Silva & Filhos',cert:'RK-A4B8C2D1',hash:'0xa9f2c3d1b7e8f4c2'},
+  {ts:'2026-04-19T09:15:33Z',type:'alert',label:'Credential expiry alert triggered',contractor:'EléctroTejo, S.A.',cert:null,hash:'0xc8d3f1a2b9e74f5c'},
+  {ts:'2026-04-18T16:42:07Z',type:'onboard',label:'New contractor onboarded to portfolio',contractor:'Fundações & Geotecnia',cert:'RK-F1B4E8C2',hash:'0xf7b2e9c4a1d58b6e'},
+  {ts:'2026-04-18T14:30:52Z',type:'revoke',label:'Credential marked expired on-chain',contractor:'Infraestruturas Verde',cert:'RK-E7D3C1B9',hash:'0xa4c1b7d9f2e35a7c'},
+  {ts:'2026-04-17T11:05:29Z',type:'rootkey',label:'ROOTKey certification issued',contractor:'Construções Silva & Filhos',cert:'RK-B2E7F1C9',hash:'0xd9e2c5b1a4f73e8d'},
+  {ts:'2026-04-16T09:00:00Z',type:'verify',label:'Contract award credential verified',contractor:'Fundações & Geotecnia',cert:'RK-A7C9F3E1',hash:'0xb5f3a7c2e9d14b6f'},
+  {ts:'2026-04-15T15:22:41Z',type:'rootkey',label:'ROOTKey certification issued',contractor:'EléctroTejo, S.A.',cert:'RK-C4E9B1F2',hash:'0xc1e7b4f9a2d36c8e'},
+];
+
+var TC={verify:'#16a34a',alert:'#d97706',onboard:'#1d4ed8',revoke:'#dc2626',rootkey:'#14532d'};
+
+/* ══════════════════════════════════════════
+   HELPERS
+══════════════════════════════════════════ */
+var S={role:'officer',prev:'dashboard',contractor:null,rkR:{},verifying:null,issuerOK:false,hitlVal:false,hitlDis:false};
+var fd=function(s){return new Date(s).toLocaleDateString('en-GB',{day:'2-digit',month:'short',year:'numeric'})};
+var fdt=function(s){return new Date(s).toLocaleString('en-GB',{day:'2-digit',month:'short',hour:'2-digit',minute:'2-digit'})};
+var dys=function(s){return Math.ceil((new Date(s)-new Date())/86400000)};
+var sh=function(h){return h.slice(0,26)+'…'};
+var rx=function(n){return Array.from({length:n},function(){return '0123456789abcdef'[Math.floor(Math.random()*16)]}).join('')};
+
+function badge(st){
+  var m={valid:'b-valid',expiring:'b-expiring',expired:'b-expired'};
+  var l={valid:'Valid',expiring:'Expiring',expired:'Expired'};
+  return '<span class="badge '+(m[st]||'b-expired')+'">'+(l[st]||'Expired')+'</span>';
+}
+function riskLabel(r){
+  var m={low:'r-low',medium:'r-med',high:'r-high'};
+  var l={low:'Low risk',medium:'Medium risk',high:'High risk'};
+  return '<span class="risk '+(m[r]||'r-med')+'">◆ '+(l[r]||'')+'</span>';
+}
+
+/* ══════════════════════════════════════════
+   ROUTER
+══════════════════════════════════════════ */
+var ALL=['login','dashboard','contractor','audit','rootkey','wallet','issuer','transparency'];
+function go(id,data){
+  var cur=document.querySelector('.screen.active');
+  if(cur&&cur.id!=='s-'+id) S.prev=cur.id.replace('s-','');
+  if(data) S.contractor=data;
+  ALL.forEach(function(s){var el=document.getElementById('s-'+s);if(el)el.classList.remove('active')});
+  var el=document.getElementById('s-'+id);
+  if(el)el.classList.add('active');
+  if(id==='dashboard')rDash();
+  if(id==='contractor')rContractor();
+  if(id==='audit')rAudit();
+  if(id==='rootkey')rRootKey();
+  if(id==='wallet')rWallet();
+  if(id==='issuer')rIssuer();
+  if(id==='transparency')rTransparency();
+}
+function goBack(){go(S.prev||'dashboard')}
+function doLogin(){var m={officer:'dashboard',contractor:'wallet',issuer:'issuer',public:'transparency'};go(m[S.role]||'dashboard')}
+function doLogout(){go('login')}
+function selectRole(role,btn){S.role=role;document.querySelectorAll('.role-btn').forEach(function(b){b.classList.remove('sel')});btn.classList.add('sel')}
+
+/* ══════════════════════════════════════════
+   DASHBOARD
+══════════════════════════════════════════ */
+function rDash(){
+  var ver=CTRS.filter(function(c){return c.verified}).length;
+  var exp=CTRS.flatMap(function(c){return c.creds}).filter(function(c){return c.status==='expiring'}).length;
+  var aC=CTRS.find(function(c){return c.creds.some(function(cr){return cr.status==='expiring'})});
+  var aCR=aC&&aC.creds.find(function(cr){return cr.status==='expiring'});
+
+  var hitlHtml='';
+  if(S.hitlVal){
+    hitlHtml='<div class="hitl-ok fi"><svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="#16a34a" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg><span>Credential validated and locked — SHA-256 sealed, logged to immutable audit trail.</span></div>';
+  } else if(!S.hitlDis&&aC){
+    hitlHtml='<div class="hitl fi"><div style="position:relative;z-index:1"><div class="hitl-tag">Human in the Loop — Action Required</div><div class="hitl-title">'+aCR.type+'</div><div class="hitl-sub">'+aC.name+' · Expires in '+dys(aCR.expires)+' days — review and validate to lock the payment gate</div></div><div style="display:flex;gap:.6rem;flex-shrink:0;position:relative;z-index:1"><button class="btn-validate" onclick="valHitl()">Validate & Lock</button><button class="btn-dismiss" onclick="disHitl()">Dismiss</button></div></div>';
+  }
+
+  var rows=CTRS.map(function(c){
+    return '<div class="tbl-row fi" style="grid-template-columns:2.4fr 1fr 0.7fr 0.7fr 18px" onclick="go(\'contractor\','+JSON.stringify(c).replace(/"/g,'&quot;')+')">'
+      +'<div><div style="font-size:14px;font-weight:600;color:var(--g9)">'+c.name+'</div><div style="font-family:\'JetBrains Mono\',monospace;font-size:9px;color:var(--tl);margin-top:.2rem">'+c.creds.length+' credential'+(c.creds.length!==1?'s':'')+' · since '+fd(c.since)+'</div></div>'
+      +badge(c.verified?'valid':'expired')
+      +riskLabel(c.risk)
+      +'<svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="var(--tl)" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg></div>';
+  }).join('');
+
+  var page=document.getElementById('dash-page');
+  page.innerHTML='<div style="display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:2rem">'
+    +'<div><div class="sl">Portfolio</div><h2 class="st" style="font-size:clamp(22px,3.5vw,38px);margin-bottom:.3rem">St. Jude\'s <em>Complex</em></h2><p style="font-size:13px;color:var(--tl)">Last synced today '+new Date().toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'})+' · ROOTKey ledger active</p></div>'
+    +'<button class="btn-g" style="flex-shrink:0"><svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/></svg> New Partner</button>'
+    +'</div>'
+    +'<div class="metric-g fi" style="grid-template-columns:repeat(4,1fr);margin-bottom:2rem">'
+    +'<div class="mc"><div class="mc-label">Total Contractors</div><div class="mc-val">'+CTRS.length+'</div><div class="mc-sub">in this portfolio</div></div>'
+    +'<div class="mc"><div class="mc-label">Verified</div><div class="mc-val" style="color:var(--g6)">'+ver+'</div><div class="mc-sub">'+Math.round(ver/CTRS.length*100)+'% compliance</div></div>'
+    +'<div class="mc"><div class="mc-label">Expiring</div><div class="mc-val" style="color:#b45309">'+exp+'</div><div class="mc-sub">require action</div></div>'
+    +'<div class="mc"><div class="mc-label">Audit Events (30d)</div><div class="mc-val" style="color:var(--g8)">'+EVENTS.length+'</div><div class="mc-sub"><button class="btn-ghost" style="margin-top:.4rem;padding:.3rem .8rem;font-size:11px" onclick="go(\'audit\')">View all →</button></div></div>'
+    +'</div>'
+    +hitlHtml
+    +'<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.8rem">'
+    +'<h3 style="font-family:\'Playfair Display\',serif;font-size:20px;font-weight:400;color:var(--g9)">Contractor Ledger</h3>'
+    +'<button class="btn-ghost" style="font-size:11px" onclick="go(\'audit\')">Full audit trail →</button>'
+    +'</div>'
+    +'<div class="tbl"><div class="tbl-head" style="grid-template-columns:2.4fr 1fr 0.7fr 0.7fr 18px"><span>Contractor</span><span>NIF</span><span>Status</span><span>Risk</span><span></span></div>'+rows+'</div>';
+  revealFi(page);
+}
+function valHitl(){S.hitlVal=true;rDash()}
+function disHitl(){S.hitlDis=true;rDash()}
+
+/* ══════════════════════════════════════════
+   CONTRACTOR DETAIL
+══════════════════════════════════════════ */
+function rContractor(){
+  var c=S.contractor;if(!c)return;
+  var cards=c.creds.map(function(cr){
+    var rk=S.rkR[cr.id];var isV=S.verifying===cr.id;
+    var rkPanel=rk?('<div class="rk-panel" style="animation:fadeUp .4s ease">'
+      +'<div class="rk-panel-title"><svg width="11" height="11" fill="none" viewBox="0 0 24 24" stroke="#16a34a" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>ROOTKey Certified</div>'
+      +'<div class="rk-fl">Certificate</div><div class="rk-fv">'+rk.cert+'</div>'
+      +'<div class="rk-fl">Hash</div><div class="rk-fv-sm">'+rk.hash.slice(0,34)+'…</div>'
+      +'<div class="rk-fl">Transaction</div><div style="font-family:\'JetBrains Mono\',monospace;font-size:9px;color:var(--g7)">'+rk.tx+'</div>'
+      +'</div>')
+    :('<div class="rk-panel">'
+      +'<div class="rk-panel-title"><span class="pnav-dot" style="margin-right:.2rem"></span>ROOTKey Certificate</div>'
+      +'<div class="rk-fl">Certificate ID</div><div class="rk-fv">'+cr.cert+'</div>'
+      +'<div class="rk-fl">Hash</div><div class="rk-fv-sm">'+sh(cr.hash)+'</div>'
+      +'<button class="btn-rk-verify" onclick="rkVerify(\''+cr.id+'\')" '+(isV?'disabled':'')+'>'+(isV?'<span class="spin">⟳</span> Verifying…':'↳ Verify with ROOTKey')+'</button>'
+      +'</div>');
+    return '<div class="cred-card fi" id="cred-'+cr.id+'">'
+      +'<div class="cred-left">'
+      +'<div style="display:flex;align-items:center;gap:.6rem;margin-bottom:.8rem">'+badge(cr.status)+'<span style="font-size:11px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--tl)">'+cr.cat+'</span></div>'
+      +'<h3 style="font-family:\'Playfair Display\',serif;font-size:22px;font-weight:400;color:var(--g9);margin-bottom:.3rem">'+cr.type+'</h3>'
+      +'<p style="font-size:13px;color:var(--td);margin-bottom:1rem;font-weight:300">Issued by '+cr.issuer+'</p>'
+      +'<div class="cred-meta">'
+      +'<div><div class="cf-label">Issued</div><div class="cf-val">'+fd(cr.issued)+'</div></div>'
+      +'<div><div class="cf-label">Expires</div><div class="cf-val" style="color:'+(cr.status==='expiring'?'#b45309':cr.status==='expired'?'#b91c1c':'var(--t)')+'">'+fd(cr.expires)+(cr.status==='expiring'?' <span style="font-family:\'JetBrains Mono\',monospace;font-size:9px;color:#b45309">('+dys(cr.expires)+'d)</span>':'')+'</div></div>'
+      +'<div><div class="cf-label">VC ID</div><div style="font-family:\'JetBrains Mono\',monospace;font-size:11px;font-weight:500;color:var(--t)">'+cr.id+'</div></div>'
+      +'</div>'
+      +'<div class="did-bar"><svg width="11" height="11" fill="none" viewBox="0 0 24 24" stroke="var(--tl)" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 11c0 3.517-1.009 6.799-2.753 9.571m-3.44-2.04l.054-.09A13.916 13.916 0 008 11a4 4 0 118 0c0 1.017-.07 2.019-.203 3m-2.118 6.844A21.88 21.88 0 0015.171 17m3.839 1.132c.645-2.266.99-4.659.99-7.132A8 8 0 008 4.07"/></svg><span>'+cr.did+'</span></div>'
+      +'</div><div class="cred-right">'+rkPanel+'</div></div>';
+  }).join('');
+
+  var page=document.getElementById('contractor-page');
+  page.innerHTML='<div class="hb2 fi" style="display:flex;justify-content:space-between;align-items:center;margin-bottom:2rem">'
+    +'<div style="position:relative;z-index:1">'
+    +'<div style="font-family:\'JetBrains Mono\',monospace;font-size:9px;letter-spacing:1.5px;color:rgba(255,255,255,.3);margin-bottom:.5rem">'+c.id+' · NIF '+c.nif+'</div>'
+    +'<h2 style="font-family:\'Playfair Display\',serif;font-size:clamp(20px,3vw,32px);font-weight:400;color:#fff;margin-bottom:1rem">'+c.name+'</h2>'
+    +'<div style="display:flex;gap:.8rem;align-items:center;flex-wrap:wrap">'+badge(c.verified?'valid':'expired')+riskLabel(c.risk)+'<span style="font-size:12px;color:rgba(255,255,255,.35)">Partner since '+fd(c.since)+'</span></div>'
+    +'</div>'
+    +'<div style="background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:12px;padding:1.5rem 2rem;text-align:center;position:relative;z-index:1;flex-shrink:0">'
+    +'<div style="font-size:9px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,.3);margin-bottom:.3rem">On-Ledger</div>'
+    +'<div style="font-family:\'Playfair Display\',serif;font-size:44px;font-weight:400;color:#fff;line-height:1">'+c.creds.length+'</div>'
+    +'<div style="font-size:10px;color:rgba(255,255,255,.3);letter-spacing:.1em;text-transform:uppercase">Credentials</div>'
+    +'</div></div>'
+    +'<h3 class="fi" style="font-family:\'Playfair Display\',serif;font-size:20px;font-weight:400;color:var(--g9);margin-bottom:1.2rem">Verifiable Credentials</h3>'
+    +cards;
+  revealFi(page);
+}
+function rkVerify(id){
+  S.verifying=id;rContractor();
+  setTimeout(function(){
+    S.rkR[id]={cert:'RK-'+rx(4).toUpperCase()+rx(4).toUpperCase(),hash:'sha256:'+rx(48),ts:new Date().toISOString(),tx:'0x'+rx(8)};
+    S.verifying=null;rContractor();
+    setTimeout(function(){var el=document.getElementById('cred-'+id);if(el)el.scrollIntoView({behavior:'smooth',block:'nearest'})},100);
+  },1600);
+}
+
+/* ══════════════════════════════════════════
+   AUDIT TRAIL
+══════════════════════════════════════════ */
+function rAudit(){
+  var rows=EVENTS.map(function(e){
+    return '<div class="tbl-row fi" style="grid-template-columns:130px 2fr 1.3fr 100px 1fr">'
+      +'<span style="font-family:\'JetBrains Mono\',monospace;font-size:10px;color:var(--tl)">'+fdt(e.ts)+'</span>'
+      +'<div style="display:flex;align-items:center;gap:.6rem"><div class="ev-dot" style="background:'+TC[e.type]+'"></div><span style="font-size:14px;font-weight:500;color:var(--g9)">'+e.label+'</span></div>'
+      +'<span style="font-size:13px;color:var(--td)">'+e.contractor+'</span>'
+      +(e.cert?'<span style="font-family:\'JetBrains Mono\',monospace;font-size:10px;color:var(--g7);font-weight:500">'+e.cert+'</span>':'<span style="color:var(--tl)">—</span>')
+      +'<span style="font-family:\'JetBrains Mono\',monospace;font-size:9px;color:var(--tl)">'+e.hash+'</span></div>';
+  }).join('');
+
+  var page=document.getElementById('audit-page');
+  page.innerHTML='<div class="fi" style="margin-bottom:2.5rem">'
+    +'<div class="sl">Tamper-proof ledger</div>'
+    +'<h2 class="st">Immutable <em>Audit Trail</em></h2>'
+    +'<p style="font-size:15px;color:var(--td);line-height:1.75;max-width:600px">All events permanently recorded and ROOTKey certified. SHA-256 sealed. Exportable for statutory reporting.</p>'
+    +'</div>'
+    +'<div style="display:flex;gap:1.4rem;margin-bottom:1.2rem;flex-wrap:wrap">'
+    +Object.entries(TC).map(function(e){return '<div style="display:flex;align-items:center;gap:.4rem"><div class="ev-dot" style="background:'+e[1]+'"></div><span style="font-size:11px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--tl)">'+e[0]+'</span></div>'}).join('')
+    +'</div>'
+    +'<div class="tbl fi"><div class="tbl-head" style="grid-template-columns:130px 2fr 1.3fr 100px 1fr"><span>Timestamp</span><span>Event</span><span>Contractor</span><span>RK Cert</span><span>Block Hash</span></div>'+rows+'</div>'
+    +'<div style="display:flex;gap:.8rem;margin-top:1.2rem">'
+    +'<button class="btn-outline" style="font-family:\'JetBrains Mono\',monospace;font-size:10px">↓ Export CSV</button>'
+    +'<button class="btn-outline" style="font-family:\'JetBrains Mono\',monospace;font-size:10px">↓ Export PDF Report</button>'
+    +'</div>';
+  revealFi(page);
+}
+
+/* ══════════════════════════════════════════
+   ROOTKEY PANEL
+══════════════════════════════════════════ */
+function rRootKey(){
+  var all=CTRS.flatMap(function(c){return c.creds.map(function(cr){return Object.assign({},cr,{ctr:c.name.split(',')[0]})})});
+  var page=document.getElementById('rootkey-page');
+  page.innerHTML='<div style="display:grid;grid-template-columns:1fr 1fr;gap:2.5rem">'
+    +'<div>'
+    +'<div class="tech-dark fi">'
+    +'<div class="sl">Integration</div>'
+    +'<h3>ROOTKey <em>Platform</em></h3>'
+    +'<p style="margin:.8rem 0 1.5rem">ROOTKey provides cryptographic data integrity certification for all credentials in the Veridiskey ledger. Every verification event is immutably recorded and independently auditable.</p>'
+    +'<div style="background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.08);border-radius:10px;padding:1.5rem">'
+    +'<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1.2rem">'
+    +'<div style="display:flex;align-items:center;gap:.5rem;font-size:10px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.35)"><span class="pnav-dot"></span>Live Connection Active</div>'
+    +'<button class="btn" style="background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.1);color:rgba(255,255,255,.5);padding:.3rem .8rem;font-size:10px;font-family:\'DM Sans\',sans-serif;border-radius:6px;cursor:pointer" onclick="pingRK()">Ping</button>'
+    +'</div>'
+    +'<div style="display:grid;grid-template-columns:1fr 1fr;gap:.8rem">'
+    +'<div class="rk-stat"><div class="rk-stat-l">Endpoint</div><div class="rk-stat-v">api.rootkey.ai/v2</div></div>'
+    +'<div class="rk-stat"><div class="rk-stat-l">Network</div><div class="rk-stat-v">Mainnet</div></div>'
+    +'<div class="rk-stat"><div class="rk-stat-l">Certifications</div><div class="rk-stat-v">'+all.length+' issued</div></div>'
+    +'<div class="rk-stat"><div class="rk-stat-l">Last Sync</div><div class="rk-stat-v">Just now</div></div>'
+    +'</div></div>'
+    +'<div style="margin-top:1.2rem;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.06);border-radius:8px;padding:1.2rem">'
+    +'<div style="font-size:9px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,.2);margin-bottom:.8rem">API Endpoints</div>'
+    +[['POST','/api/rootkey/certify','#4ade80'],['GET','/api/rootkey/verify/:hash','#86efac'],['GET','/api/rootkey/certificate/:id','#d1fae5'],['GET','/api/rootkey/audit/events','#a7f3d0']].map(function(e){return '<div style="display:flex;align-items:center;gap:.7rem;margin-bottom:.5rem"><span style="font-family:\'JetBrains Mono\',monospace;font-size:9px;font-weight:700;color:rgba(255,255,255,.2);width:30px">'+e[0]+'</span><span style="font-family:\'JetBrains Mono\',monospace;font-size:11px;color:'+e[2]+'">'+e[1]+'</span></div>'}).join('')
+    +'</div>'
+    +'<a href="https://rootkey.ai" style="display:inline-flex;align-items:center;gap:.4rem;margin-top:1rem;font-size:11px;color:rgba(255,255,255,.3);font-family:\'JetBrains Mono\',monospace" target="_blank">↗ rootkey.ai</a>'
+    +'</div>'
+    +'<div class="card-gb fi" style="margin-top:1.5rem;background:var(--g0)">'
+    +'<div class="sl">EBSI Dual-Layer</div>'
+    +'<p style="font-size:14px;color:var(--td);line-height:1.75;font-weight:300">ROOTKey certifications anchor alongside EBSI Verifiable Credentials — providing W3C VC on EBSI plus ROOTKey hash certification for dual-layer integrity.</p>'
+    +'</div></div>'
+    +'<div>'
+    +'<div class="sl fi">Recent Certifications</div>'
+    +all.slice(0,6).map(function(cr){return '<div class="rk-cert-row fi"><div><div class="rk-cert-name">'+cr.type+'</div><div class="rk-cert-sub">'+cr.ctr+'</div></div><div><div class="rk-cert-id">'+cr.cert+'</div><div class="rk-cert-hash">'+sh(cr.hash)+'</div></div></div>'}).join('')
+    +'</div></div>';
+  revealFi(page);
+}
+function pingRK(){
+  var btn=document.querySelector('#rootkey-page .tech-dark button');
+  if(btn){btn.textContent='⟳';btn.style.animation='spin .7s linear infinite';}
+  setTimeout(function(){if(btn){btn.textContent='✓ OK';btn.style.animation='';btn.style.color='var(--g4)';setTimeout(function(){if(btn){btn.textContent='Ping';btn.style.color=''}},2000)}},1400);
+}
+
+/* ══════════════════════════════════════════
+   CONTRACTOR WALLET
+══════════════════════════════════════════ */
+function rWallet(){
+  var c=CTRS[0];
+  var page=document.getElementById('wallet-page');
+  page.innerHTML='<div style="max-width:680px">'
+    +'<div class="fi" style="margin-bottom:2rem">'
+    +'<div class="sl">My Wallet</div>'
+    +'<h2 class="st" style="font-size:clamp(20px,3.5vw,34px);margin-bottom:.3rem">'+c.name+'</h2>'
+    +'<p style="font-size:13px;color:var(--tl)">NIF '+c.nif+' · '+badge('valid')+' · did:ebsi:z22ZHsQmN…</p>'
+    +'</div>'
+    +'<div class="hb2 fi" style="display:flex;justify-content:space-between;align-items:center;padding:1.8rem 2.2rem;margin-bottom:2rem">'
+    +'<div style="display:flex;gap:2rem;position:relative;z-index:1">'
+    +[['Credentials',c.creds.length,'#fff'],['Valid',c.creds.filter(function(x){return x.status==='valid'}).length,'var(--g4)'],['Expiring',c.creds.filter(function(x){return x.status==='expiring'}).length,'#fde68a']].map(function(a){return '<div style="text-align:center"><div style="font-family:\'Playfair Display\',serif;font-size:38px;font-weight:400;color:'+a[2]+';line-height:1">'+a[1]+'</div><div style="font-size:10px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.3);margin-top:.3rem">'+a[0]+'</div></div>'}).join('')
+    +'</div>'
+    +'<button class="btn" style="background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.12);color:rgba(255,255,255,.7);padding:.6rem 1.2rem;font-size:13px;font-family:\'DM Sans\',sans-serif;border-radius:8px;cursor:pointer;position:relative;z-index:1">⊕ Request Credential</button>'
+    +'</div>'
+    +'<h3 class="fi" style="font-family:\'Playfair Display\',serif;font-size:18px;font-weight:400;color:var(--g9);margin-bottom:1.2rem">Your Credentials</h3>'
+    +c.creds.map(function(cr){
+      return '<div class="card-accent fi" style="margin-bottom:1.2rem">'
+        +'<div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:1rem">'
+        +'<div><div style="display:flex;align-items:center;gap:.5rem;margin-bottom:.6rem">'+badge(cr.status)+'<span style="font-size:11px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--tl)">'+cr.cat+'</span></div>'
+        +'<h4 style="font-family:\'Playfair Display\',serif;font-size:18px;font-weight:400;color:var(--g9);margin-bottom:.2rem">'+cr.type+'</h4>'
+        +'<p style="font-size:12px;color:var(--td);font-weight:300">Issued by '+cr.issuer+'</p></div>'
+        +'<div style="background:var(--g0);border:1px solid var(--gb);border-radius:8px;padding:.8rem;text-align:center;flex-shrink:0;width:60px">'
+        +'<div style="font-size:22px;line-height:1">⠿</div><div style="font-family:\'JetBrains Mono\',monospace;font-size:7px;color:var(--tl);margin-top:.3rem;letter-spacing:.5px">QR</div>'
+        +'</div></div>'
+        +'<div style="display:flex;gap:1.8rem;padding-top:1rem;border-top:1px solid rgba(0,0,0,.05)">'
+        +'<div><div class="cf-label">Issued</div><div style="font-size:13px;font-weight:500;color:var(--t)">'+fd(cr.issued)+'</div></div>'
+        +'<div><div class="cf-label">Expires</div><div style="font-size:13px;font-weight:500;color:'+(cr.status==='expiring'?'#b45309':'var(--t)')+'">'+fd(cr.expires)+'</div></div>'
+        +'<div><div class="cf-label">ROOTKey</div><div style="font-family:\'JetBrains Mono\',monospace;font-size:12px;color:var(--g7);font-weight:500">'+cr.cert+'</div></div>'
+        +'</div></div>';
+    }).join('')
+    +'</div>';
+  revealFi(page);
+}
+
+/* ══════════════════════════════════════════
+   ISSUER DASHBOARD
+══════════════════════════════════════════ */
+function rIssuer(){
+  var issued=[
+    {ctr:'Construções Silva',type:'Alvará de Construção',date:'2026-04-15',cert:'RK-A4B8C2D1'},
+    {ctr:'Fundações & Geotecnia',type:'Especialização Geotecnia',date:'2026-04-10',cert:'RK-F1B4E8C2'},
+    {ctr:'EléctroTejo',type:'Cert. Energia Solar',date:'2026-04-08',cert:'RK-C4E9B1F2'},
+  ];
+  var ok=S.issuerOK?'<div class="hitl-ok fi" style="margin-bottom:1.5rem"><svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="#16a34a" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg><span>Credential issued — VC sent to contractor wallet · ROOTKey certified · EBSI ledger updated</span></div>':'';
+  var page=document.getElementById('issuer-page');
+  page.innerHTML='<div style="display:grid;grid-template-columns:1fr 1fr;gap:2.5rem">'
+    +'<div>'
+    +'<div class="fi"><div class="sl">Credential Issuance</div><h2 class="st" style="font-size:clamp(22px,3vw,34px)">Issue <em>Credential</em></h2></div>'
+    +ok
+    +'<div class="card-gb fi">'
+    +'<div class="fg"><label>Contractor NIF / Name</label><input type="text" placeholder="507 891 234 · Construções Silva…"/></div>'
+    +'<div class="fg"><label>Credential Type</label><select><option>Alvará de Construção</option><option>Licença DGEG</option><option>Seguro Responsabilidade Civil</option><option>Certificado ISO 9001</option><option>Especialização Geotecnia</option><option>Cert. Energia Solar</option></select></div>'
+    +'<div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem">'
+    +'<div class="fg"><label>Issued Date</label><input type="date" value="'+new Date().toISOString().slice(0,10)+'"/></div>'
+    +'<div class="fg"><label>Expiry Date</label><input type="date"/></div>'
+    +'</div>'
+    +'<div class="fg"><label>Issuer DID (auto)</label><input type="text" value="did:ebsi:zt4WTQ…InCI_PT" readonly style="color:var(--tl);background:var(--g0)"/></div>'
+    +'<div style="background:var(--g0);border:1px solid var(--gb);border-radius:8px;padding:.8rem 1rem;margin-bottom:1.2rem;display:flex;align-items:center;gap:.6rem">'
+    +'<span class="pnav-dot"></span><span style="font-size:12px;color:var(--g7);font-weight:500">ROOTKey certification applied automatically on issuance</span>'
+    +'</div>'
+    +'<button class="btn-g" style="width:100%;justify-content:center;padding:.75rem;font-size:14px" onclick="issueC()">Issue Verifiable Credential</button>'
+    +'</div></div>'
+    +'<div>'
+    +'<div class="sl fi">Recently Issued</div>'
+    +issued.map(function(i){return '<div class="card-w fi" style="margin-bottom:.9rem;display:flex;justify-content:space-between;align-items:center"><div><div style="font-size:14px;font-weight:600;color:var(--g9);margin-bottom:.2rem">'+i.type+'</div><div style="font-size:12px;color:var(--td)">'+i.ctr+' · '+i.date+'</div></div><span class="badge b-rk">'+i.cert+'</span></div>'}).join('')
+    +'<div class="card-w fi" style="margin-top:1.5rem">'
+    +'<div class="sl">Issuer Stats</div>'
+    +'<div style="display:flex;gap:2rem;margin-top:.8rem">'
+    +[['47','Issued (30d)','var(--g9)'],['3','Pending','#b45309'],['1','Revoked','#b91c1c']].map(function(a){return '<div><div style="font-family:\'Playfair Display\',serif;font-size:32px;font-weight:400;color:'+a[2]+';line-height:1">'+a[0]+'</div><div style="font-size:12px;color:var(--td);font-weight:300">'+a[1]+'</div></div>'}).join('')
+    +'</div></div>'
+    +'</div></div>';
+  revealFi(page);
+}
+function issueC(){setTimeout(function(){S.issuerOK=true;rIssuer()},900)}
+
+/* ══════════════════════════════════════════
+   PUBLIC TRANSPARENCY
+══════════════════════════════════════════ */
+function rTransparency(){
+  var contracts=[
+    {id:'PCT-2025-001',title:'LED Streetlight Maintenance — Zone A',auth:'Câmara Municipal de Lisboa',val:'€2.4M',ctr:'EléctroTejo',awarded:'2025-09-15',status:'active',ms:'Phase 2/4'},
+    {id:'PCT-2025-002',title:'Public Building Retrofit Programme',auth:'IHRU',val:'€5.1M',ctr:'Construções Silva & Filhos',awarded:'2025-11-01',status:'active',ms:'Phase 1/3'},
+    {id:'PCT-2024-089',title:'Road Infrastructure Maintenance',auth:'IP Portugal',val:'€1.8M',ctr:'Fundações & Geotecnia',awarded:'2024-06-20',status:'complete',ms:'Completed'},
+  ];
+  var page=document.getElementById('transparency-page');
+  page.innerHTML='<div class="fi" style="margin-bottom:2rem">'
+    +'<div class="sl">Public Ledger</div>'
+    +'<h2 class="st">Procurement <em>Transparency</em></h2>'
+    +'<p style="font-size:15px;color:var(--td);line-height:1.75;max-width:600px">Read-only public view of all procurement events, contract awards and milestone records. Data anchored to EBSI ledger and independently verifiable.</p>'
+    +'</div>'
+    +'<div class="metric-g fi" style="grid-template-columns:repeat(4,1fr);margin-bottom:2rem">'
+    +'<div class="mc"><div class="mc-label">Public Contracts</div><div class="mc-val">3</div><div class="mc-sub">on this ledger</div></div>'
+    +'<div class="mc"><div class="mc-label">Total Value</div><div class="mc-val" style="color:var(--g7);font-size:30px">€9.3M</div><div class="mc-sub">under management</div></div>'
+    +'<div class="mc"><div class="mc-label">Verified Contractors</div><div class="mc-val" style="color:var(--g6)">3</div><div class="mc-sub">100% compliant</div></div>'
+    +'<div class="mc"><div class="mc-label">Audit Events</div><div class="mc-val" style="color:var(--g8)">'+EVENTS.length+'</div><div class="mc-sub">publicly verifiable</div></div>'
+    +'</div>'
+    +'<div class="tbl fi"><div class="tbl-head" style="grid-template-columns:1fr 1.1fr 0.55fr 1fr 0.6fr 0.6fr"><span>Contract</span><span>Authority</span><span>Value</span><span>Contractor</span><span>Status</span><span>Milestone</span></div>'
+    +contracts.map(function(p){return '<div class="trans-row fi" style="grid-template-columns:1fr 1.1fr 0.55fr 1fr 0.6fr 0.6fr"><div><div style="font-size:14px;font-weight:500;color:var(--g9)">'+p.title+'</div><div style="font-family:\'JetBrains Mono\',monospace;font-size:9px;color:var(--tl);margin-top:.2rem">'+p.id+'</div></div><span style="font-size:13px;color:var(--td)">'+p.auth+'</span><span style="font-size:14px;font-weight:600;color:var(--g9)">'+p.val+'</span><span style="font-size:13px;color:var(--tb)">'+p.ctr+'</span>'+badge(p.status==='active'?'valid':'expiring')+'<span style="font-family:\'JetBrains Mono\',monospace;font-size:10px;color:var(--tl)">'+p.ms+'</span></div>'}).join('')
+    +'</div>'
+    +'<div class="card-w fi" style="margin-top:1.2rem;padding:1.4rem 1.8rem">'
+    +'<div class="sl">EBSI Ledger Verification</div>'
+    +'<p style="font-size:13px;color:var(--tb);line-height:1.7;font-weight:300">All records can be independently verified against the EBSI public ledger at <strong style="color:var(--g7);font-weight:600">hub.ebsi.eu</strong> using the contract hash or DID reference.</p>'
+    +'</div>';
+  revealFi(page);
+}
+
+/* ══════════════════════════════════════════
+   INIT
+══════════════════════════════════════════ */
+go('login');
+</script>
+</body>
+</html>
